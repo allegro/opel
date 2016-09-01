@@ -1,0 +1,11 @@
+# gradle config
+.gradle
+
+# project binaries
+build
+out
+classes
+
+# mac os x
+.DS_Store
+

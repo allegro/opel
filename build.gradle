@@ -1,20 +1,32 @@
-group 'pl.allegro.opbox'
-
 buildscript {
-    repositories {
-        jcenter()
+    repositories { mavenCentral() }
+    dependencies {
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
+}
+
+plugins {
+    id 'com.bmuschko.nexus' version '2.3.1'
+    id 'pl.allegro.tech.build.axion-release' version '1.4.0'
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-
-sourceCompatibility = 1.8
+apply plugin: 'io.codearte.nexus-staging'
 
 repositories {
     mavenCentral()
 }
+
+sourceCompatibility = 1.8
+
+scmVersion {
+    tag { prefix = project.name }
+    versionCreator 'versionWithBranch'
+}
+
+project.version = scmVersion.version
+project.group = 'pl.allegro.tech'
 
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
@@ -22,4 +34,49 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
 
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
+}
+
+nexusStaging {
+    packageGroup = 'pl.allegro'
+    numberOfRetries = 15
+    delayBetweenRetriesInMillis = 5000
+}
+
+modifyPom {
+    project {
+        name 'opel'
+        description 'Asynchronous expression language'
+        url 'https://github.com/allegro/opel'
+        inceptionYear '2016'
+
+        scm {
+            url 'https://github.com/allegro/opel'
+            connection 'scm:git@github.com:allegro/opel.git'
+            developerConnection 'scm:git@github.com:allegro/opel.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+        }
+
+        developers {
+            developer {
+                id 'opel-developers'
+                name 'OPEL-DEVELOPERS'
+            }
+        }
+    }
 }

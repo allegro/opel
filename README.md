@@ -76,6 +76,6 @@ Basically, all you have to do is to add a compile dependency:
 
 ```
 dependencies {
-    compile 'pl.allegro.opel:opel:1.0'
+    compile 'pl.allegro.tech:opel:1.0'
 }
 ```

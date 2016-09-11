@@ -20,14 +20,14 @@ public class OpelParsingResult {
     }
 
     public CompletableFuture<?> eval(EvalContext context) {
-        return evalWithExactContext(EvalContext.Builder.mergeContexts(context, embeddedEvalContext));
+        return evalWithFinalContext(EvalContext.Builder.mergeContexts(context, embeddedEvalContext));
     }
 
     public CompletableFuture<?> eval() {
-        return evalWithExactContext(embeddedEvalContext);
+        return evalWithFinalContext(embeddedEvalContext);
     }
 
-    private CompletableFuture<?> evalWithExactContext(EvalContext context) {
+    private CompletableFuture<?> evalWithFinalContext(EvalContext context) {
         return getParsedExpression()
                 .map(node -> node.getValue(context))
                 .orElseThrow(() -> new OpelException("Expression '" + expression + "' contain's syntax error"));

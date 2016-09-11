@@ -20,7 +20,7 @@ public interface EvalContext {
     class Builder {
         private final Map<String, CompletableFuture<Object>> variables = new HashMap<>();
         private final Map<String, OpelAsyncFunction<?>> functions = new HashMap<>();
-        private EvalContext parentEvalContext = fromMaps(variables, functions);
+        private EvalContext parentEvalContext = EvalContext.empty();
 
         private static EvalContext fromMaps(Map<String, CompletableFuture<Object>> variables, Map<String, OpelAsyncFunction<?>> functions) {
             return new EvalContext() {

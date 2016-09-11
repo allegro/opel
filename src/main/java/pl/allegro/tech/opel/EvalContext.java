@@ -20,7 +20,7 @@ public interface EvalContext {
     class Builder {
         private final Map<String, CompletableFuture<Object>> variables = new HashMap<>();
         private final Map<String, OpelAsyncFunction<?>> functions = new HashMap<>();
-        private Optional<EvalContext> parentEvalContext = Optional.empty();
+        private EvalContext parentEvalContext = fromMaps(variables, functions);
 
         private static EvalContext fromMaps(Map<String, CompletableFuture<Object>> variables, Map<String, OpelAsyncFunction<?>> functions) {
             return new EvalContext() {
@@ -41,7 +41,7 @@ public interface EvalContext {
         }
 
         public Builder withParentEvalContext(EvalContext evalContext) {
-            this.parentEvalContext = Optional.of(evalContext);
+            this.parentEvalContext = evalContext;
             return this;
         }
 
@@ -71,7 +71,7 @@ public interface EvalContext {
         }
 
         public EvalContext build() {
-            return parentEvalContext.map(this::mergeContexts).orElse(fromMaps(variables, functions));
+            return mergeContexts(parentEvalContext);
         }
 
         EvalContext mergeContexts(EvalContext parent) {

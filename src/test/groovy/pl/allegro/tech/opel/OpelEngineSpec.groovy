@@ -711,7 +711,7 @@ xyz'"""
         given:
         def evalContext = EvalContext.Builder.create()
                 .withCompletedVariable('myVar', 1)
-                .withFunction('myFunc', { apply << CompletableFuture.completedFuture(1) })
+                .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         when:
@@ -729,7 +729,7 @@ xyz'"""
         given:
         def parentContext = EvalContext.Builder.create()
                 .withCompletedVariable('myVar', 1)
-                .withFunction('myFunc', { apply << CompletableFuture.completedFuture(1) })
+                .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         def evalContext = EvalContext.Builder.create().withParentEvalContext(parentContext).build();
@@ -749,24 +749,149 @@ xyz'"""
         given:
         def parentContext = EvalContext.Builder.create()
                 .withCompletedVariable('myVar', 1)
-                .withFunction('myFunc', { apply << CompletableFuture.completedFuture(1) })
+                .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         def evalContext = EvalContext.Builder.create()
                 .withParentEvalContext(parentContext)
                 .withCompletedVariable('myVar', 100)
-                .withFunction('myFunc', { apply << CompletableFuture.completedFuture(100) })
+                .withFunction('myFunc', constFunctionReturning(100))
                 .build();
 
         when:
-        def eval = new OpelEngine().eval('2+myVar', evalContext).get()
+        def result = new OpelEngine().eval('2+myVar', evalContext).get()
 
         then:
-        eval == 102
+        result == 102
 
         where:
         input << ['2+myVar', '2+myFunc']
     }
+
+    @Unroll
+    def "should evaluate expression with variable and function registered in engine"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 202)
+        engine.registerFunction('myFunc', constFunctionReturning(103))
+
+        when:
+        def value = engine.eval(expression)
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 204
+        '3 + myFunc()'                      | 106
+    }
+
+    @Unroll
+    def "should evaluate expression with variable and function registered in engine with empty context given"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 202)
+        engine.registerFunction('myFunc', constFunctionReturning(103))
+
+        when:
+        def value = engine.eval(expression, EvalContext.empty())
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 204
+        '3 + myFunc()'                      | 106
+    }
+
+    @Unroll
+    def "should prefere variables and functions from eval context"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 1)
+        engine.registerFunction('myFunc', constFunctionReturning(2))
+
+        def evalContext = EvalContext.Builder.create()
+                .withFunction('myFunc', constFunctionReturning(1000))
+                .withCompletedVariable('myVar', 2000)
+                .build()
+
+        when:
+        def value = engine.eval(expression, evalContext)
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 2002
+        '3 + myFunc()'                      | 1003
+    }
+
+    @Unroll
+    def "should evaluate parsed expression with variable and function registered in engine"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 202)
+        engine.registerFunction('myFunc', constFunctionReturning(103))
+
+        when:
+        def value = engine.parse(expression).eval()
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 204
+        '3 + myFunc()'                      | 106
+    }
+
+    @Unroll
+    def "should evaluate parsed expression with variable and function registered in engine with empty context given"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 202)
+        engine.registerFunction('myFunc', constFunctionReturning(103))
+
+        when:
+        def value = engine.parse(expression).eval(EvalContext.empty())
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 204
+        '3 + myFunc()'                      | 106
+    }
+
+    @Unroll
+    def "should prefere variables and functions from eval context when evaluating parsed expression"() {
+        given:
+        def engine = new OpelEngine()
+        engine.registerCompletedVariable('myVar', 1)
+        engine.registerFunction('myFunc', constFunctionReturning(2))
+
+        def evalContext = EvalContext.Builder.create()
+                .withFunction('myFunc', constFunctionReturning(1000))
+                .withCompletedVariable('myVar', 2000)
+                .build()
+
+        when:
+        def value = engine.parse(expression).eval(evalContext)
+
+        then:
+        value.get() == expected
+
+        where:
+        expression                          | expected
+        '2 + myVar'                         | 2002
+        '3 + myFunc()'                      | 1003
+    }
+
 
     private static functions() {
         def functionWith2Args = function({ args ->

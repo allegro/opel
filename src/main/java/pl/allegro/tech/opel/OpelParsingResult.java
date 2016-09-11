@@ -11,13 +11,23 @@ import java.util.concurrent.CompletableFuture;
 public class OpelParsingResult {
     private final ParsingResult<ExpressionNode> parsingResult;
     private final String expression;
+    private final EvalContext embeddedEvalContext;
 
-    OpelParsingResult(String expression, ParsingResult<ExpressionNode> parsingResult) {
+    OpelParsingResult(String expression, ParsingResult<ExpressionNode> parsingResult, EvalContext embeddedEvalContext) {
         this.parsingResult = parsingResult;
         this.expression = expression;
+        this.embeddedEvalContext = embeddedEvalContext;
     }
 
     public CompletableFuture<?> eval(EvalContext context) {
+        return evalWithExactContext(EvalContext.Builder.mergeContexts(context, embeddedEvalContext));
+    }
+
+    public CompletableFuture<?> eval() {
+        return evalWithExactContext(embeddedEvalContext);
+    }
+
+    private CompletableFuture<?> evalWithExactContext(EvalContext context) {
         return getParsedExpression()
                 .map(node -> node.getValue(context))
                 .orElseThrow(() -> new OpelException("Expression '" + expression + "' contain's syntax error"));

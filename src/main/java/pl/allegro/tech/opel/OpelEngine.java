@@ -17,7 +17,7 @@ public class OpelEngine {
     private final Map<String, CompletableFuture<Object>> embeddedVariables = new HashMap<>();
     private EvalContext embeddedEvalContext = EvalContext.empty();
 
-    private OpelEngine() {
+    public OpelEngine() {
         this(MethodExecutionFilters.ALLOW_ALL);
     }
 

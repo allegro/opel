@@ -99,19 +99,14 @@ public interface EvalContext {
                 @Override
                 public Optional<OpelAsyncFunction<?>> getFunction(String name) {
                     Optional<OpelAsyncFunction<?>> function = primary.getFunction(name);
-                    if (function.isPresent()) {
-                        return function;
-                    }
-                    return secondary.getFunction(name);
+
+                    return function.isPresent() ? function : secondary.getFunction(name);
                 }
 
                 @Override
                 public Optional<CompletableFuture<?>> getVariable(String name) {
                     Optional<CompletableFuture<?>> variable = primary.getVariable(name);
-                    if (variable.isPresent()) {
-                        return variable;
-                    }
-                    return secondary.getVariable(name);
+                    return (variable.isPresent()) ? variable : secondary.getVariable(name);
                 }
             };
         }

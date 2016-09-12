@@ -20,7 +20,7 @@ public class OpelParsingResult {
     }
 
     public CompletableFuture<?> eval(EvalContext context) {
-        return evalWithFinalContext(EvalContext.Builder.mergeContexts(context, embeddedEvalContext));
+        return evalWithFinalContext(EvalContextBuilder.mergeContexts(context, embeddedEvalContext));
     }
 
     public CompletableFuture<?> eval() {

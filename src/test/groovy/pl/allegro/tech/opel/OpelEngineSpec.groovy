@@ -7,12 +7,14 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 
+import static OpelEngineBuilder.create
+
 class OpelEngineSpec extends Specification {
 
     @Unroll
     def 'should evaluate math expression #input'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -42,9 +44,9 @@ class OpelEngineSpec extends Specification {
     @Unroll
     def 'should throw an exception on subtracting with string (expression #input)'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
         def variables = ["o": CompletableFuture.completedFuture(new Object())]
-        def evalContext = EvalContext.Builder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
 
         when:
         engine.eval(input, evalContext).get()
@@ -63,9 +65,10 @@ class OpelEngineSpec extends Specification {
     @Unroll
     def 'should convert to number for subtracting operator using implicit conversion (expression #input)'() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -84,7 +87,7 @@ class OpelEngineSpec extends Specification {
     @Unroll
     def 'should evaluate string expression #input'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -101,9 +104,10 @@ class OpelEngineSpec extends Specification {
 
     @Unroll
     def "should use left side as primary type for sum operator (#input)"() {
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -124,9 +128,10 @@ class OpelEngineSpec extends Specification {
 
     @Unroll
     def "should convert to BigDecimal regardless of whether the left type form  multiplying & dividing operator (#input)"() {
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -146,9 +151,10 @@ class OpelEngineSpec extends Specification {
     }
 
     def "should use left site as primary type for sum operator and throw exception when conversion failed"() {
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
         def variables = ['o': CompletableFuture.completedFuture(new Object())]
 
         when:
@@ -163,7 +169,7 @@ class OpelEngineSpec extends Specification {
 
     def 'should return parsing result with errors for multi line string'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
         def input = """'abc
 xyz'"""
 
@@ -174,9 +180,10 @@ xyz'"""
     @Unroll
     def 'should evaluate expression with whitespaces "#input"'() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -208,9 +215,10 @@ xyz'"""
     @Unroll
     def 'should evaluate expression which starts with whitespace(s): "#input"'() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -229,7 +237,11 @@ xyz'"""
     @Unroll
     def 'should evaluate function call expression #input'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create()
+                    .withImplicitConversion(String, Integer, { string -> Integer.valueOf(string) })
+                    .withImplicitConversion(Integer, String, { decimal -> decimal.toString() })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
         OpelAsyncFunction function = { args ->
             args.get(0).thenApply({ o ->
                 switch (o) {
@@ -241,10 +253,8 @@ xyz'"""
                 }
             })
         }
-        engine.registerImplicitConversion(String, Integer, { string -> Integer.valueOf(string) })
-        engine.registerImplicitConversion(Integer, String, { decimal -> decimal.toString() })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-        def evalContext = EvalContext.Builder.create().withFunction('ds', function).build()
+
+        def evalContext = EvalContextBuilder.create().withFunction('ds', function).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -273,10 +283,11 @@ xyz'"""
     @Unroll
     def 'should evaluate logical expression #input'() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-        def evalContext = EvalContext.Builder.create()
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
+        def evalContext = EvalContextBuilder.create()
                 .withFunction('fun', constFunctionReturning('abc'))
                 .withFunctions(functions())
                 .build()
@@ -324,7 +335,7 @@ xyz'"""
 
     def 'AND operator should have higher priority than OR'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -338,9 +349,10 @@ xyz'"""
     @Unroll
     def "should firstly convert right argument when comparing objects in #input"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+        def engine = create()
+                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                    .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -353,8 +365,9 @@ xyz'"""
 
     def "should convert string to number in comparison when one way conversion from string to number is registered"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+        def engine = create()
+                     .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                     .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -368,7 +381,7 @@ xyz'"""
     @Unroll
     def "should evaluate relational operators with higher priority then equality operator (#input)"() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -385,10 +398,10 @@ xyz'"""
     def "should throw an exception when comparing invalid objects in #input expression"() {
         given:
         def variables = ['o': CompletableFuture.completedFuture(new Object())]
-        def evalContext = EvalContext.Builder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
 
         when:
-        new OpelEngine().eval(input, evalContext).get()
+        create().build().eval(input, evalContext).get()
 
         then:
         thrown ExecutionException
@@ -404,8 +417,8 @@ xyz'"""
     @Unroll
     def 'should return function value: #input'() {
         given:
-        def engine = new OpelEngine()
-        def evalContext = EvalContext.Builder.create().withFunctions(functions()).build()
+        def engine = create().build()
+        def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -424,8 +437,8 @@ xyz'"""
     @Unroll
     def 'should evaluate comparison with function: #input'() {
         given:
-        def engine = new OpelEngine()
-        def evalContext = EvalContext.Builder.create().withFunctions(functions()).build()
+        def engine = create().build()
+        def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -451,7 +464,7 @@ xyz'"""
     @Unroll
     def 'validationSucceed should be equal to #validationSucceed for expression: "#input"'() {
         expect:
-        new OpelEngine().validate(input).succeed == validationSucceed
+        create().build().validate(input).succeed == validationSucceed
 
         where:
         input                                       || validationSucceed
@@ -490,7 +503,7 @@ xyz'"""
 
     def 'validation should return proper message for invalid expression'() {
         when:
-        ExpressionValidationResult validationResult = new OpelEngine().validate("1 ,= 5")
+        ExpressionValidationResult validationResult = create().build().validate("1 ,= 5")
 
         then:
         validationResult.errorMessage ==
@@ -501,7 +514,7 @@ xyz'"""
 
     def '0-arg function should receive empty list of arguments'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
         def functionWithoutArgs = { args ->
             if (args != null && args.isEmpty()) {
                 return CompletableFuture.completedFuture('Empty list')
@@ -509,7 +522,7 @@ xyz'"""
                 return CompletableFuture.completedFuture('Something else')
             }
         } as OpelAsyncFunction
-        def evalContext = EvalContext.Builder.create().withFunction('zero', functionWithoutArgs).build()
+        def evalContext = EvalContextBuilder.create().withFunction('zero', functionWithoutArgs).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -522,13 +535,14 @@ xyz'"""
     @Unroll
     def 'should call object methods for input #input'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
+
         def variables = ["var": CompletableFuture.completedFuture(["a", "b", "c"]), "arg": CompletableFuture.completedFuture("a")]
 
-        engine.registerImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-        engine.registerImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-
-        def evalContext = EvalContext.Builder.create().withVariables(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
+        def evalContext = EvalContextBuilder.create().withVariables(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -546,8 +560,9 @@ xyz'"""
 
     @Unroll
     def 'should call methods on wrapped object for input #input'() {
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, RichString, { string -> new RichString(string) })
+        def engine = create()
+                    .withImplicitConversion(String, RichString, { string -> new RichString(string) })
+                    .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -571,8 +586,9 @@ xyz'"""
     }
 
     def "should register conversions in multithreaded environment"() {
-        def engine = new OpelEngine()
-        engine.registerImplicitConversion(String, RichString, { string -> new RichString(string) })
+        def engine = create()
+                    .withImplicitConversion(String, RichString, { string -> new RichString(string) })
+                    .build()
         def executor = Executors.newSingleThreadExecutor()
 
         when:
@@ -599,10 +615,10 @@ xyz'"""
     def "should access registered variables in #input"() {
         given:
         def variables = ['var': CompletableFuture.completedFuture(["a": [1, 2]])]
-        def evalContext = EvalContext.Builder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
 
         expect:
-        new OpelEngine().eval(input, evalContext).get() == expResult
+        create().build().eval(input, evalContext).get() == expResult
 
         where:
         input      || expResult
@@ -615,10 +631,10 @@ xyz'"""
     def "should access registered future variables in #input"() {
         given:
         def variables = ['var': CompletableFuture.completedFuture(["a": [1, 2]])]
-        def evalContext = EvalContext.Builder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
 
         expect:
-        new OpelEngine().eval(input, evalContext).get() == expResult
+        create().build().eval(input, evalContext).get() == expResult
 
         where:
         input      || expResult
@@ -630,7 +646,7 @@ xyz'"""
     @Unroll
     def "should access true and false native variables without registration in '#input'"() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -651,9 +667,19 @@ xyz'"""
 
     def "should be able to register function and variable with the same name"() {
         given:
-        def engine = new OpelEngine()
+        def engine = create()
+                    .withVariable("x", CompletableFuture.completedFuture("var"))
+                    .withFunction('x', constFunctionReturning('fun'))
+                    .build()
+        expect:
+        engine.eval("x + x()").get() == "varfun"
+    }
+
+    def "should be able to use context with function and variable with the same name"() {
+        given:
+        def engine = create().build()
         def vars = ["x": CompletableFuture.completedFuture("var")]
-        def evalContext = EvalContext.Builder.create().withVariables(vars).withFunction('x', constFunctionReturning('fun')).build()
+        def evalContext = EvalContextBuilder.create().withVariables(vars).withFunction('x', constFunctionReturning('fun')).build()
 
         expect:
         engine.eval("x + x()", evalContext).get() == "varfun"
@@ -662,7 +688,7 @@ xyz'"""
     @Unroll
     def "should calculate if expression (#input)"() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -688,14 +714,14 @@ xyz'"""
 
     def 'should calculate only left value when condition result result is true'() {
         given:
-        def engine = new OpelEngine()
+        def engine = create().build()
         def counter1 = 0;
         def counter2 = 0;
         def functions = [
                 'one'        : (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) },
                 'twoArgsFunc': (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) }
         ];
-        def evalContext = EvalContext.Builder.create().withFunctions(functions).build()
+        def evalContext = EvalContextBuilder.create().withFunctions(functions).build()
 
         when:
         def result = engine.eval("if (true) one() else twoArgsFunc()", evalContext).get()
@@ -709,13 +735,13 @@ xyz'"""
     @Unroll
     def "should eval value using provided eval context"() {
         given:
-        def evalContext = EvalContext.Builder.create()
+        def evalContext = EvalContextBuilder.create()
                 .withCompletedVariable('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         when:
-        def eval = new OpelEngine().eval('2+myVar', evalContext).get()
+        def eval = create().build().eval('2+myVar', evalContext).get()
 
         then:
         eval == 3
@@ -727,15 +753,15 @@ xyz'"""
     @Unroll
     def "should be able to use variables and functions from parent context"() {
         given:
-        def parentContext = EvalContext.Builder.create()
+        def parentContext = EvalContextBuilder.create()
                 .withCompletedVariable('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
-        def evalContext = EvalContext.Builder.create().withParentEvalContext(parentContext).build();
+        def evalContext = EvalContextBuilder.create().withParentEvalContext(parentContext).build();
 
         when:
-        def eval = new OpelEngine().eval('2+myVar', evalContext).get()
+        def eval = create().build().eval('2+myVar', evalContext).get()
 
         then:
         eval == 3
@@ -747,19 +773,19 @@ xyz'"""
     @Unroll
     def "should be able to override variables and functions from parent context"() {
         given:
-        def parentContext = EvalContext.Builder.create()
+        def parentContext = EvalContextBuilder.create()
                 .withCompletedVariable('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
-        def evalContext = EvalContext.Builder.create()
+        def evalContext = EvalContextBuilder.create()
                 .withParentEvalContext(parentContext)
                 .withCompletedVariable('myVar', 100)
                 .withFunction('myFunc', constFunctionReturning(100))
                 .build();
 
         when:
-        def result = new OpelEngine().eval('2+myVar', evalContext).get()
+        def result = create().build().eval('2+myVar', evalContext).get()
 
         then:
         result == 102
@@ -771,9 +797,10 @@ xyz'"""
     @Unroll
     def "should evaluate expression with variable and function registered in engine"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 202)
-        engine.registerFunction('myFunc', constFunctionReturning(103))
+        def engine = create()
+                    .withFunction('myFunc', constFunctionReturning(103))
+                    .withCompletedVariable('myVar', 202)
+                    .build()
 
         when:
         def value = engine.eval(expression)
@@ -790,9 +817,10 @@ xyz'"""
     @Unroll
     def "should evaluate expression with variable and function registered in engine with empty context given"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 202)
-        engine.registerFunction('myFunc', constFunctionReturning(103))
+        def engine = create()
+                .withFunction('myFunc', constFunctionReturning(103))
+                .withCompletedVariable('myVar', 202)
+                .build()
 
         when:
         def value = engine.eval(expression, EvalContext.empty())
@@ -809,11 +837,12 @@ xyz'"""
     @Unroll
     def "should prefere variables and functions from eval context"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 1)
-        engine.registerFunction('myFunc', constFunctionReturning(2))
+        def engine = create()
+                .withFunction('myFunc', constFunctionReturning(2))
+                .withCompletedVariable('myVar', 1)
+                .build()
 
-        def evalContext = EvalContext.Builder.create()
+        def evalContext = EvalContextBuilder.create()
                 .withFunction('myFunc', constFunctionReturning(1000))
                 .withCompletedVariable('myVar', 2000)
                 .build()
@@ -833,9 +862,10 @@ xyz'"""
     @Unroll
     def "should evaluate parsed expression with variable and function registered in engine"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 202)
-        engine.registerFunction('myFunc', constFunctionReturning(103))
+        def engine = create()
+                .withFunction('myFunc', constFunctionReturning(103))
+                .withCompletedVariable('myVar', 202)
+                .build()
 
         when:
         def value = engine.parse(expression).eval()
@@ -852,9 +882,10 @@ xyz'"""
     @Unroll
     def "should evaluate parsed expression with variable and function registered in engine with empty context given"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 202)
-        engine.registerFunction('myFunc', constFunctionReturning(103))
+        def engine = create()
+                .withFunction('myFunc', constFunctionReturning(103))
+                .withCompletedVariable('myVar', 202)
+                .build()
 
         when:
         def value = engine.parse(expression).eval(EvalContext.empty())
@@ -871,11 +902,12 @@ xyz'"""
     @Unroll
     def "should prefere variables and functions from eval context when evaluating parsed expression"() {
         given:
-        def engine = new OpelEngine()
-        engine.registerCompletedVariable('myVar', 1)
-        engine.registerFunction('myFunc', constFunctionReturning(2))
+        def engine = create()
+                    .withCompletedVariable('myVar', 1)
+                    .withFunction('myFunc', constFunctionReturning(2))
+                    .build()
 
-        def evalContext = EvalContext.Builder.create()
+        def evalContext = EvalContextBuilder.create()
                 .withFunction('myFunc', constFunctionReturning(1000))
                 .withCompletedVariable('myVar', 2000)
                 .build()

@@ -7,7 +7,7 @@ class FunctionCallExpressionNodeSpec extends Specification {
         given:
         def arguments = new ArgumentsListExpressionNode(valueNode('y'), new ArgumentsListExpressionNode(valueNode('x')))
         def functionCallNode = new FunctionCallExpressionNode('f1', arguments)
-        def evalContext = EvalContext.Builder.create().withFunctions(functions()).build()
+        def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
 
         when:
         def result = functionCallNode.getValue(evalContext).get()

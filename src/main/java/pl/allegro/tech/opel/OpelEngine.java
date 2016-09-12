@@ -5,20 +5,17 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
-public class OpelEngine {
+class OpelEngine {
     private final ThreadLocal<OpelParser> parser;
     private final ImplicitConversion implicitConversion;
 
-    public OpelEngine() {
-        this(MethodExecutionFilters.ALLOW_ALL);
-    }
+    private EvalContext embeddedEvalContext = EvalContext.empty();
 
-    public OpelEngine(MethodExecutionFilter methodExecutionFilter) {
-        implicitConversion = new ImplicitConversion();
-        implicitConversion.registerNumberConversion();
-        parser = ThreadLocal.withInitial(() -> Parboiled.createParser(OpelParser.class, methodExecutionFilter, implicitConversion));
+    OpelEngine(MethodExecutionFilter methodExecutionFilter, ImplicitConversion implicitConversion, EvalContext embeddedEvalContext) {
+        this.embeddedEvalContext = embeddedEvalContext;
+        this.implicitConversion = implicitConversion;
+        parser = ThreadLocal.withInitial(() -> Parboiled.createParser(OpelParser.class, methodExecutionFilter, this.implicitConversion));
     }
 
     public ExpressionValidationResult validate(String expression) {
@@ -31,24 +28,20 @@ public class OpelEngine {
     }
 
     public OpelParsingResult parse(String expression) {
-        return new OpelParsingResult(expression, getParsingResult(expression));
+        return new OpelParsingResult(expression, getParsingResult(expression), embeddedEvalContext);
     }
 
     public CompletableFuture<?> eval(String expression) {
         ParsingResult<ExpressionNode> parsingResult = getParsingResult(expression);
-        return parsingResult.resultValue.getValue();
+        return parsingResult.resultValue.getValue(embeddedEvalContext);
     }
 
     public CompletableFuture<?> eval(String expression, EvalContext evalContext) {
         ParsingResult<ExpressionNode> parsingResult = getParsingResult(expression);
-        return parsingResult.resultValue.getValue(evalContext);
+        return parsingResult.resultValue.getValue(EvalContextBuilder.mergeContexts(evalContext, embeddedEvalContext));
     }
 
     private ParsingResult<ExpressionNode> getParsingResult(String expression) {
         return new ReportingParseRunner<ExpressionNode>(parser.get().ParsingUnit()).run(expression);
-    }
-
-    public <T, R> void registerImplicitConversion(Class<T> from, Class<R> to, Function<T, R> conversion) {
-        implicitConversion.register(new ImplicitConversionUnit<>(from, to, conversion));
     }
 }

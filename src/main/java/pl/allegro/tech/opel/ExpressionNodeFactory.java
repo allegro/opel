@@ -1,5 +1,9 @@
 package pl.allegro.tech.opel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 class ExpressionNodeFactory {
     private final ImplicitConversion implicitConversion;
     private final MethodExecutionFilter methodExecutionFilter;
@@ -65,4 +69,21 @@ class ExpressionNodeFactory {
         return VariableExpressionNode.create(variable);
     }
 
+    public DeclarationExpressionNode declaration(ExpressionNode identifier, ExpressionNode expression) {
+        return new DeclarationExpressionNode(identifier, expression);
+    }
+
+    public DeclarationsListExpressionNode emptyDeclarationsList() {
+        return new DeclarationsListExpressionNode(Collections.emptyList());
+    }
+
+    public DeclarationsListExpressionNode declarationsList(ExpressionNode declarationsListExpressionNode, ExpressionNode identifier, ExpressionNode expression) {
+        List<DeclarationExpressionNode> declarations = ((DeclarationsListExpressionNode) declarationsListExpressionNode).getDeclarations();
+        return new DeclarationsListExpressionNode(declarations, new DeclarationExpressionNode(identifier, expression));
+    }
+
+    public ExpressionNode program(ExpressionNode declarationsList, ExpressionNode expression) {
+
+        return new ProgramExpressionNode((DeclarationsListExpressionNode)declarationsList, expression);
+    }
 }

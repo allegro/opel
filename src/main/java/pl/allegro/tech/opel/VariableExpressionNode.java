@@ -20,6 +20,6 @@ class VariableExpressionNode implements ExpressionNode {
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
         Optional<CompletableFuture<?>> variable = context.getVariable(variableName);
-        return variable.orElseThrow(() -> new RuntimeException("Unknown variable " + variableName));
+        return variable.orElseThrow(() -> new OpelException("Unknown variable " + variableName));
     }
 }

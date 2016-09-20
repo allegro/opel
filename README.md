@@ -66,6 +66,7 @@ opel supports:
 - simple list element access (i.e. `list[index]`)
 - object method calls (i.e. `'Hello, World!'.length()`)
 - if expressions (i.e. `if (2 > 3) 'a' else 'b'`)
+- defining local final variables (i.e. `def x = 2+2*2; x * x`)
 - registrable implicit conversions (i.e. `2 + '2'` or `'Hello, World!'.myMethod()`)
 - registrable functions (i.e. `myFunction('Hello, World!')`)
 - registrable constant values (i.e. `'Hello, ' + WORLD_VALUE`)

@@ -19,7 +19,7 @@ class OpelParser extends BaseParser<ExpressionNode> {
     }
 
     Rule ParsingUnit() {
-        return Sequence(WhiteSpace(), Expression(), EOI);
+        return Sequence(WhiteSpace(), Program(), EOI);
     }
 
     Rule Value() {
@@ -132,6 +132,18 @@ class OpelParser extends BaseParser<ExpressionNode> {
                         )
                 )
         );
+    }
+
+    Rule Program() {
+        return Sequence(push(nodeFactory.emptyDeclarationsList()), Declarations(), Expression(), push(nodeFactory.program(pop(1), pop())));
+    }
+
+    Rule Declarations() {
+        return ZeroOrMore(Declaration());
+    }
+
+    Rule Declaration() {
+        return Sequence("def ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
     }
 
     Rule Expression() {

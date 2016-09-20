@@ -135,11 +135,11 @@ class OpelParser extends BaseParser<ExpressionNode> {
     }
 
     Rule Program() {
-        return Sequence(push(nodeFactory.emptyDeclarationsList()), Declarations(), Expression(), push(nodeFactory.program(pop(1), pop())));
+        return Sequence(Declarations(), Expression(), push(nodeFactory.program(pop(1), pop())));
     }
 
     Rule Declarations() {
-        return ZeroOrMore(Declaration());
+        return Sequence(push(nodeFactory.emptyDeclarationsList()), ZeroOrMore(Declaration()));
     }
 
     Rule Declaration() {

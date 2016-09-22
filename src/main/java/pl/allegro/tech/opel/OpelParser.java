@@ -143,7 +143,7 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Declaration() {
-        return Sequence("def ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
+        return Sequence("val ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
     }
 
     Rule Expression() {

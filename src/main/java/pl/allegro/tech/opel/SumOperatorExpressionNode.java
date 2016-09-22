@@ -8,7 +8,7 @@ class SumOperatorExpressionNode extends BinaryOperationExpressionNode {
 
     private final ImplicitConversion implicitConversion;
 
-    public SumOperatorExpressionNode(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public SumOperatorExpressionNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.implicitConversion = implicitConversion;
     }

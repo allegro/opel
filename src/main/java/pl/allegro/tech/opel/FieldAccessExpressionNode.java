@@ -7,13 +7,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-class FieldAccessExpressionNode implements ExpressionNode {
+class FieldAccessExpressionNode implements OpelNode {
     private final static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final ExpressionNode subject;
-    private final ExpressionNode fieldName;
+    private final OpelNode subject;
+    private final OpelNode fieldName;
 
-    public FieldAccessExpressionNode(ExpressionNode subject, ExpressionNode fieldName) {
+    public FieldAccessExpressionNode(OpelNode subject, OpelNode fieldName) {
         this.subject = subject;
         this.fieldName = fieldName;
     }

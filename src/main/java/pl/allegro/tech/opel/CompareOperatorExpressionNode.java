@@ -7,7 +7,7 @@ class CompareOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final boolean equal;
     private final ImplicitConversion implicitConversion;
 
-    private CompareOperatorExpressionNode(boolean greater, boolean equal, ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    private CompareOperatorExpressionNode(boolean greater, boolean equal, OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.greater = greater;
         this.equal = equal;
@@ -38,19 +38,19 @@ class CompareOperatorExpressionNode extends BinaryOperationExpressionNode {
         });
     }
 
-    public static ExpressionNode greaterThen(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static OpelNode greaterThen(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new CompareOperatorExpressionNode(true, false, left, right, implicitConversion);
     }
 
-    public static ExpressionNode greaterOrEqual(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static OpelNode greaterOrEqual(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new CompareOperatorExpressionNode(true, true, left, right, implicitConversion);
     }
 
-    public static ExpressionNode lowerThen(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static OpelNode lowerThen(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new CompareOperatorExpressionNode(false, false, left, right, implicitConversion);
     }
 
-    public static ExpressionNode lowerOrEqual(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static OpelNode lowerOrEqual(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new CompareOperatorExpressionNode(false, true, left, right, implicitConversion);
     }
 }

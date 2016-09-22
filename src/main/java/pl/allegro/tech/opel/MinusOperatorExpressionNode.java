@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 class MinusOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final ImplicitConversion implicitConversion;
 
-    public MinusOperatorExpressionNode(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public MinusOperatorExpressionNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.implicitConversion = implicitConversion;
     }

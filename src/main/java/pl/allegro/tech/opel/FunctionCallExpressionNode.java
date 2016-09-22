@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-class FunctionCallExpressionNode implements ExpressionNode {
+class FunctionCallExpressionNode implements OpelNode {
     private final String functionName;
     private final Optional<ArgumentsListExpressionNode> arguments;
 
@@ -19,7 +19,7 @@ class FunctionCallExpressionNode implements ExpressionNode {
         this.arguments = Optional.empty();
     }
 
-    static FunctionCallExpressionNode create(ExpressionNode identifier, ExpressionNode args) {
+    static FunctionCallExpressionNode create(OpelNode identifier, OpelNode args) {
         if (identifier instanceof IdentifierExpressionNode && args instanceof ArgumentsListExpressionNode) {
             String identifierValue = ((IdentifierExpressionNode) identifier).getIdentifier();
             return new FunctionCallExpressionNode(identifierValue, (ArgumentsListExpressionNode) args);
@@ -27,7 +27,7 @@ class FunctionCallExpressionNode implements ExpressionNode {
         throw new IllegalArgumentException("Cannot create FunctionCallExpressionNode from " + identifier.getClass().getSimpleName() + " and " + args.getClass().getSimpleName());
     }
 
-    static FunctionCallExpressionNode create(ExpressionNode identifier) {
+    static FunctionCallExpressionNode create(OpelNode identifier) {
         if (identifier instanceof IdentifierExpressionNode) {
             String identifierValue = ((IdentifierExpressionNode) identifier).getIdentifier();
             return new FunctionCallExpressionNode(identifierValue);

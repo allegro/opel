@@ -19,7 +19,7 @@ class OpelEngine {
     }
 
     public ExpressionValidationResult validate(String expression) {
-        ParsingResult<ExpressionNode> parsingResult = getParsingResult(expression);
+        ParsingResult<OpelNode> parsingResult = getParsingResult(expression);
         if (parsingResult.hasErrors()) {
             return ExpressionValidationResult.invalid(parsingResult.parseErrors);
         } else {
@@ -32,16 +32,16 @@ class OpelEngine {
     }
 
     public CompletableFuture<?> eval(String expression) {
-        ParsingResult<ExpressionNode> parsingResult = getParsingResult(expression);
+        ParsingResult<OpelNode> parsingResult = getParsingResult(expression);
         return parsingResult.resultValue.getValue(embeddedEvalContext);
     }
 
     public CompletableFuture<?> eval(String expression, EvalContext evalContext) {
-        ParsingResult<ExpressionNode> parsingResult = getParsingResult(expression);
+        ParsingResult<OpelNode> parsingResult = getParsingResult(expression);
         return parsingResult.resultValue.getValue(EvalContextBuilder.mergeContexts(evalContext, embeddedEvalContext));
     }
 
-    private ParsingResult<ExpressionNode> getParsingResult(String expression) {
-        return new ReportingParseRunner<ExpressionNode>(parser.get().ParsingUnit()).run(expression);
+    private ParsingResult<OpelNode> getParsingResult(String expression) {
+        return new ReportingParseRunner<OpelNode>(parser.get().ParsingUnit()).run(expression);
     }
 }

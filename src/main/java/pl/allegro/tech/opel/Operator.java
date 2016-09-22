@@ -14,7 +14,7 @@ enum Operator {
     AND,
     OR;
 
-    public ExpressionNode createNode(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public OpelNode createNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         switch (this) {
             case PLUS:
                 return new SumOperatorExpressionNode(left, right, implicitConversion);

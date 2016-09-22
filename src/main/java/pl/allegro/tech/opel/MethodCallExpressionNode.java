@@ -11,14 +11,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class MethodCallExpressionNode implements ExpressionNode {
-    private final ExpressionNode subject;
+public class MethodCallExpressionNode implements OpelNode {
+    private final OpelNode subject;
     private final String identifier;
     private final Optional<ArgumentsListExpressionNode> arguments;
     private final ImplicitConversion implicitConversion;
     private final MethodExecutionFilter methodExecutionFilter;
 
-    public MethodCallExpressionNode(ExpressionNode subject, String identifier, Optional<ArgumentsListExpressionNode> arguments, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
+    public MethodCallExpressionNode(OpelNode subject, String identifier, Optional<ArgumentsListExpressionNode> arguments, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
         this.subject = subject;
         this.identifier = identifier;
         this.arguments = arguments;
@@ -26,19 +26,19 @@ public class MethodCallExpressionNode implements ExpressionNode {
         this.methodExecutionFilter = methodExecutionFilter;
     }
 
-    static MethodCallExpressionNode create(ExpressionNode subject, ExpressionNode identifier, ExpressionNode arguments, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
+    static MethodCallExpressionNode create(OpelNode subject, OpelNode identifier, OpelNode arguments, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
         if (!(identifier instanceof IdentifierExpressionNode)) {
-            throw new IllegalArgumentException("Cannot create from ExpressionNode because identifier is of wrong node type " + identifier.getClass().getSimpleName());
+            throw new IllegalArgumentException("Cannot create from OpelNode because identifier is of wrong node type " + identifier.getClass().getSimpleName());
         }
         if (!(arguments instanceof ArgumentsListExpressionNode)) {
-            throw new IllegalArgumentException("Cannot create from ExpressionNode because arguments is of wrong node type " + arguments.getClass().getSimpleName());
+            throw new IllegalArgumentException("Cannot create from OpelNode because arguments is of wrong node type " + arguments.getClass().getSimpleName());
         }
         return new MethodCallExpressionNode(subject, ((IdentifierExpressionNode) identifier).getIdentifier(), Optional.of((ArgumentsListExpressionNode) arguments), implicitConversion, methodExecutionFilter);
     }
 
-    static MethodCallExpressionNode create(ExpressionNode subject, ExpressionNode identifier, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
+    static MethodCallExpressionNode create(OpelNode subject, OpelNode identifier, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
         if (!(identifier instanceof IdentifierExpressionNode)) {
-            throw new IllegalArgumentException("Cannot create from ExpressionNode because identifier is of wrong node type " + identifier.getClass().getSimpleName());
+            throw new IllegalArgumentException("Cannot create from OpelNode because identifier is of wrong node type " + identifier.getClass().getSimpleName());
         }
         return new MethodCallExpressionNode(subject, ((IdentifierExpressionNode) identifier).getIdentifier(), Optional.empty(), implicitConversion, methodExecutionFilter);
     }

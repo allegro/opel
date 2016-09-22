@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-class ArgumentsListExpressionNode implements ExpressionNode {
+class ArgumentsListExpressionNode implements OpelNode {
 
-    private final ExpressionNode head;
+    private final OpelNode head;
     private final Optional<ArgumentsListExpressionNode> tail;
 
-    public ArgumentsListExpressionNode(ExpressionNode head) {
+    public ArgumentsListExpressionNode(OpelNode head) {
         this.head = head;
         this.tail = Optional.empty();
     }
 
-    public ArgumentsListExpressionNode(ExpressionNode head, ArgumentsListExpressionNode tail) {
+    public ArgumentsListExpressionNode(OpelNode head, ArgumentsListExpressionNode tail) {
         if (head instanceof ArgumentsListExpressionNode) {
             throw new IllegalArgumentException("Head can't be " + head.getClass().getSimpleName());
         }

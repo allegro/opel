@@ -8,17 +8,17 @@ class LogicalOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final Operator logicalOperator;
     private final ImplicitConversion conversion;
 
-    private LogicalOperatorExpressionNode(Operator logicalOperator, ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    private LogicalOperatorExpressionNode(Operator logicalOperator, OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.logicalOperator = logicalOperator;
         this.conversion = implicitConversion;
     }
 
-    static LogicalOperatorExpressionNode andOperator(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    static LogicalOperatorExpressionNode andOperator(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new LogicalOperatorExpressionNode(Operator.AND, left, right, implicitConversion);
     }
 
-    static LogicalOperatorExpressionNode orOperator(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    static LogicalOperatorExpressionNode orOperator(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new LogicalOperatorExpressionNode(Operator.OR, left, right, implicitConversion);
     }
 

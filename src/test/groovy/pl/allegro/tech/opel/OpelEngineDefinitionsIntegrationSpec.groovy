@@ -21,18 +21,18 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
 
         where:
         input                                                     || expResult
-        "def one=1;one"                                           || 1
-        "def two=1+1;two + 1"                                     || 3
-        "def two=1+1; def three = two +1; three + 1"              || 4
-        "def condition=1==1; if(condition) 5 else 6"              || 5
+        "val one=1;one"                                           || 1
+        "val two=1+1;two + 1"                                     || 3
+        "val two=1+1; val three = two +1; three + 1"              || 4
+        "val condition=1==1; if(condition) 5 else 6"              || 5
     }
 
     def "should allow declare values in separate lines"() {
         given:
         def engine = create().build()
         def input = """
-           def two=1+1;
-           def three = two +1;
+           val two=1+1;
+           val three = two +1;
            three + 1
            """
 
@@ -43,8 +43,8 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
     def "should avoid use value before it is declared"() {
         given:
         def engine = create().build()
-        def expression = '''def a = b + 1;
-            def b = 1;
+        def expression = '''val a = b + 1;
+            val b = 1;
             b'''
 
         when:
@@ -59,8 +59,8 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
         given:
         def engine = create().build()
         def expression = '''
-            def a = 1;
-            def a = 2;
+            val a = 1;
+            val a = 2;
             a'''
 
         when:
@@ -75,7 +75,7 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
         given:
         def engine = create().build()
         def expression = '''
-            def a = a + 4;
+            val a = a + 4;
             5'''
 
         when:
@@ -91,7 +91,7 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
         def engine = create().build()
 
         when:
-        engine.eval('def one= two / 2;def two = one + one; one + two').get()
+        engine.eval('val one= two / 2;val two = one + one; one + two').get()
 
         then:
         OpelException ex = thrown()
@@ -102,7 +102,7 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
         given:
         def engine = create().build()
         def input = """
-           def a = 2;
+           val a = 2;
            a * a
            """
         def evalContext = EvalContextBuilder.create().withVariable('a', completedFuture(1)).build()

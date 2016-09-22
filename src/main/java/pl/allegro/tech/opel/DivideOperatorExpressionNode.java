@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 class DivideOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final ImplicitConversion implicitConversion;
 
-    public DivideOperatorExpressionNode(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public DivideOperatorExpressionNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.implicitConversion = implicitConversion;
     }

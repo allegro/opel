@@ -3,14 +3,14 @@ package pl.allegro.tech.opel;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-class VariableExpressionNode implements ExpressionNode {
+class VariableExpressionNode implements OpelNode {
     private final String variableName;
 
     public VariableExpressionNode(String variableName) {
         this.variableName = variableName;
     }
 
-    public static VariableExpressionNode create(ExpressionNode node) {
+    public static VariableExpressionNode create(OpelNode node) {
         if (node instanceof IdentifierExpressionNode) {
             return new VariableExpressionNode(((IdentifierExpressionNode) node).getIdentifier());
         }

@@ -8,7 +8,7 @@ import org.parboiled.annotations.SuppressSubnodes;
 import java.math.BigDecimal;
 
 @BuildParseTree
-class OpelParser extends BaseParser<ExpressionNode> {
+class OpelParser extends BaseParser<OpelNode> {
 
     final ImplicitConversion implicitConversion;
     final ExpressionNodeFactory nodeFactory;
@@ -143,7 +143,7 @@ class OpelParser extends BaseParser<ExpressionNode> {
     }
 
     Rule Declaration() {
-        return Sequence("def ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
+        return Sequence("val ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
     }
 
     Rule Expression() {
@@ -268,18 +268,18 @@ class OpelParser extends BaseParser<ExpressionNode> {
 
     protected ArgumentsListExpressionNode getFunctionArguments() {
 
-        ExpressionNode node = pop();
+        OpelNode node = pop();
         if (node instanceof ArgumentsListExpressionNode) {
             return (ArgumentsListExpressionNode) node;
         }
         return nodeFactory.argumentsList(node);
     }
 
-    protected ExpressionNode binaryOperation(Operator operator) {
+    protected OpelNode binaryOperation(Operator operator) {
         return nodeFactory.binaryOperationNode(operator, pop(1), pop());
     }
 
-    protected ExpressionNode variableNode(ExpressionNode variableIdentifierNode) {
+    protected OpelNode variableNode(OpelNode variableIdentifierNode) {
         if (variableIdentifierNode instanceof IdentifierExpressionNode) {
             String identifier = ((IdentifierExpressionNode) variableIdentifierNode).getIdentifier();
             switch (identifier) {

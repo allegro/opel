@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class EvalContextBuilder {
     private final Map<String, CompletableFuture<Object>> variables = new HashMap<>();

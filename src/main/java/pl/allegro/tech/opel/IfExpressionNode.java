@@ -4,10 +4,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 class IfExpressionNode extends BinaryOperationExpressionNode {
-    private final ExpressionNode condition;
+    private final OpelNode condition;
     private final ImplicitConversion implicitConversion;
 
-    public IfExpressionNode(ExpressionNode condition, ExpressionNode trueValue, ExpressionNode falseValue, ImplicitConversion implicitConversion) {
+    public IfExpressionNode(OpelNode condition, OpelNode trueValue, OpelNode falseValue, ImplicitConversion implicitConversion) {
         super(trueValue, falseValue);
         this.condition = condition;
         this.implicitConversion = implicitConversion;

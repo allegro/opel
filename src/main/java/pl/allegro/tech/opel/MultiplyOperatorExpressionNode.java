@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 class MultiplyOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final ImplicitConversion implicitConversion;
 
-    public MultiplyOperatorExpressionNode(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public MultiplyOperatorExpressionNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.implicitConversion = implicitConversion;
     }

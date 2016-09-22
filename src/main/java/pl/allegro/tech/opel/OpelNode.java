@@ -2,6 +2,6 @@ package pl.allegro.tech.opel;
 
 import java.util.concurrent.CompletableFuture;
 
-interface ExpressionNode {
+interface OpelNode {
     CompletableFuture<?> getValue(EvalContext context);
 }

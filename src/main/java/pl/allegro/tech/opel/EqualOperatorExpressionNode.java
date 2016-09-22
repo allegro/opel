@@ -11,17 +11,17 @@ class EqualOperatorExpressionNode extends BinaryOperationExpressionNode {
     private final boolean equal;
     private final ImplicitConversion implicitConversion;
 
-    private EqualOperatorExpressionNode(boolean equal, ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    private EqualOperatorExpressionNode(boolean equal, OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);
         this.equal = equal;
         this.implicitConversion = implicitConversion;
     }
 
-    public static EqualOperatorExpressionNode equalityOperator(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static EqualOperatorExpressionNode equalityOperator(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new EqualOperatorExpressionNode(true, left, right, implicitConversion);
     }
 
-    public static EqualOperatorExpressionNode inequalityOperator(ExpressionNode left, ExpressionNode right, ImplicitConversion implicitConversion) {
+    public static EqualOperatorExpressionNode inequalityOperator(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         return new EqualOperatorExpressionNode(false, left, right, implicitConversion);
     }
 

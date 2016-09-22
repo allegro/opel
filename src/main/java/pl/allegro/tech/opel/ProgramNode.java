@@ -3,12 +3,14 @@ package pl.allegro.tech.opel;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class ProgramExpressionNode implements ExpressionNode {
-    private DeclarationsListExpressionNode declarations;
-    private ExpressionNode expression;
+public class ProgramNode implements OpelNode {
+    private DeclarationsListStatementNode declarations;
+    private OpelNode expression;
 
-    public ProgramExpressionNode(DeclarationsListExpressionNode declarationsList, ExpressionNode expression) {
+    public ProgramNode(DeclarationsListStatementNode declarationsList, OpelNode expression) {
         this.declarations = declarationsList;
         this.expression = expression;
     }
@@ -18,7 +20,7 @@ public class ProgramExpressionNode implements ExpressionNode {
         return expression.getValue(updatedContext(declarations.getDeclarations(), context));
     }
 
-    private EvalContext updatedContext(List<DeclarationExpressionNode> declarations, EvalContext parentContext) {
+    private EvalContext updatedContext(List<DeclarationStatementNode> declarations, EvalContext parentContext) {
         if (declarations.isEmpty()) {
             return parentContext;
         }
@@ -42,6 +44,9 @@ public class ProgramExpressionNode implements ExpressionNode {
 
         declarations.stream().forEach( d -> {
             CompletableFuture<?> value = d.getExpression().getValue(updatedContext);
+            if (variables.containsKey(d.getIdentifier().getIdentifier())) {
+                throw new OpelException("Illegal override of variable " + d.getIdentifier().getIdentifier());
+            }
             variables.put(d.getIdentifier().getIdentifier(), value);
         });
 

@@ -169,14 +169,14 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     }
 
     @Unroll
-    def "should be able to use variables and functions from parent context"() {
+    def "should be able to use variables and functions from external context"() {
         given:
-        def parentContext = EvalContextBuilder.create()
+        def externalContext = EvalContextBuilder.create()
                 .withCompletedVariable('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
-        def evalContext = EvalContextBuilder.create().withParentEvalContext(parentContext).build();
+        def evalContext = EvalContextBuilder.create().withExternalEvalContext(externalContext).build();
 
         when:
         def eval = create().build().eval('2+myVar', evalContext).get()
@@ -189,15 +189,15 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     }
 
     @Unroll
-    def "should be able to override variables and functions from parent context"() {
+    def "should be able to override variables and functions from external context"() {
         given:
-        def parentContext = EvalContextBuilder.create()
+        def externalContext = EvalContextBuilder.create()
                 .withCompletedVariable('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         def evalContext = EvalContextBuilder.create()
-                .withParentEvalContext(parentContext)
+                .withExternalEvalContext(externalContext)
                 .withCompletedVariable('myVar', 100)
                 .withFunction('myFunc', constFunctionReturning(100))
                 .build();

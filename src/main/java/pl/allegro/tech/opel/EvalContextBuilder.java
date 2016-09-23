@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 public class EvalContextBuilder {
     private final Map<String, CompletableFuture<Object>> variables = new HashMap<>();
     private final Map<String, OpelAsyncFunction<?>> functions = new HashMap<>();
-    private Optional<EvalContext> parentEvalContext = Optional.empty();
+    private Optional<EvalContext> externalEvalContext = Optional.empty();
 
     static EvalContext fromMaps(Map<String, CompletableFuture<Object>> variables, Map<String, OpelAsyncFunction<?>> functions) {
         return new EvalContext() {
@@ -29,8 +28,8 @@ public class EvalContextBuilder {
         return new EvalContextBuilder();
     }
 
-    public EvalContextBuilder withParentEvalContext(EvalContext evalContext) {
-        this.parentEvalContext = Optional.of(evalContext);
+    public EvalContextBuilder withExternalEvalContext(EvalContext evalContext) {
+        this.externalEvalContext = Optional.of(evalContext);
         return this;
     }
 
@@ -68,27 +67,8 @@ public class EvalContextBuilder {
     }
 
     public EvalContext build() {
-        return parentEvalContext.map(this::mergeContexts).orElse(fromMaps(variables, functions));
-    }
-
-    EvalContext mergeContexts(EvalContext parent) {
-        return new EvalContext() {
-            @Override
-            public Optional<OpelAsyncFunction<?>> getFunction(String name) {
-                if (functions.containsKey(name)) {
-                    return Optional.ofNullable(functions.get(name));
-                }
-                return parent.getFunction(name);
-            }
-
-            @Override
-            public Optional<CompletableFuture<?>> getVariable(String name) {
-                if (variables.containsKey(name)) {
-                    return Optional.ofNullable(variables.get(name));
-                }
-                return parent.getVariable(name);
-            }
-        };
+        return externalEvalContext.map(external -> mergeContexts(fromMaps(variables, functions), external))
+                .orElseGet(() -> fromMaps(variables, functions));
     }
 
     static EvalContext mergeContexts(EvalContext primary, EvalContext secondary) {

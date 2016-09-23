@@ -2,7 +2,7 @@
 
 # opel - asynchronous expression language
 
-opel was designed to let you write simple, single line asynchronous expressions. It uses 
+opel was designed to let you write simple, short asynchronous expressions. It uses 
 [Parboiled](https://github.com/sirthias/parboiled) as a language grammar engine and common Java 8 
 [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
 
@@ -53,7 +53,7 @@ After checking some expression languages like:
 
 opel aims at very simple expressions. Certainly it won't be enough to make complicated scripts - but we want opel to stay that way.
 
-We discourage using *anonymous functions*, *variables declarations*, *code blocks*, *loops*, etc.
+We discourage using *anonymous functions*, *code blocks*, *loops*, etc.
 
 ## What can opel do for you?
 

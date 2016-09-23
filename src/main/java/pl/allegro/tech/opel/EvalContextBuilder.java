@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class EvalContextBuilder {
     private final Map<String, CompletableFuture<Object>> variables = new HashMap<>();
@@ -56,6 +57,14 @@ public class EvalContextBuilder {
     public EvalContextBuilder withFunctions(Map<String, OpelAsyncFunction<?>> functions) {
         this.functions.putAll(functions);
         return this;
+    }
+
+    public boolean hasVariable(String varName) {
+        return variables.containsKey(varName);
+    }
+
+    public boolean hasFunction(String funName) {
+        return functions.containsKey(funName);
     }
 
     public EvalContext build() {

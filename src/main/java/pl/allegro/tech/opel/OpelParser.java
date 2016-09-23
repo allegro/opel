@@ -8,7 +8,7 @@ import org.parboiled.annotations.SuppressSubnodes;
 import java.math.BigDecimal;
 
 @BuildParseTree
-class OpelParser extends BaseParser<ExpressionNode> {
+class OpelParser extends BaseParser<OpelNode> {
 
     final ImplicitConversion implicitConversion;
     final ExpressionNodeFactory nodeFactory;
@@ -19,7 +19,7 @@ class OpelParser extends BaseParser<ExpressionNode> {
     }
 
     Rule ParsingUnit() {
-        return Sequence(WhiteSpace(), Expression(), EOI);
+        return Sequence(WhiteSpace(), Program(), EOI);
     }
 
     Rule Value() {
@@ -132,6 +132,18 @@ class OpelParser extends BaseParser<ExpressionNode> {
                         )
                 )
         );
+    }
+
+    Rule Program() {
+        return Sequence(Declarations(), Expression(), push(nodeFactory.program(pop(1), pop())));
+    }
+
+    Rule Declarations() {
+        return Sequence(push(nodeFactory.emptyDeclarationsList()), ZeroOrMore(Declaration()));
+    }
+
+    Rule Declaration() {
+        return Sequence("val ", Identifier(), "= ", Expression(), "; ", push(nodeFactory.declarationsList(pop(2), pop(1), pop())));
     }
 
     Rule Expression() {
@@ -256,18 +268,18 @@ class OpelParser extends BaseParser<ExpressionNode> {
 
     protected ArgumentsListExpressionNode getFunctionArguments() {
 
-        ExpressionNode node = pop();
+        OpelNode node = pop();
         if (node instanceof ArgumentsListExpressionNode) {
             return (ArgumentsListExpressionNode) node;
         }
         return nodeFactory.argumentsList(node);
     }
 
-    protected ExpressionNode binaryOperation(Operator operator) {
+    protected OpelNode binaryOperation(Operator operator) {
         return nodeFactory.binaryOperationNode(operator, pop(1), pop());
     }
 
-    protected ExpressionNode variableNode(ExpressionNode variableIdentifierNode) {
+    protected OpelNode variableNode(OpelNode variableIdentifierNode) {
         if (variableIdentifierNode instanceof IdentifierExpressionNode) {
             String identifier = ((IdentifierExpressionNode) variableIdentifierNode).getIdentifier();
             switch (identifier) {

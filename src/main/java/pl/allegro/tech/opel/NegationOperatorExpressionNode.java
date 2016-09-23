@@ -3,12 +3,12 @@ package pl.allegro.tech.opel;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
-class NegationOperatorExpressionNode implements ExpressionNode {
+class NegationOperatorExpressionNode implements OpelNode {
 
-    private final ExpressionNode value;
+    private final OpelNode value;
     private final ImplicitConversion implicitConversion;
 
-    public NegationOperatorExpressionNode(ExpressionNode value, ImplicitConversion implicitConversion) {
+    public NegationOperatorExpressionNode(OpelNode value, ImplicitConversion implicitConversion) {
         this.value = value;
         this.implicitConversion = implicitConversion;
     }

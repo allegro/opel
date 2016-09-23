@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class OpelParsingResult {
-    private final ParsingResult<ExpressionNode> parsingResult;
+    private final ParsingResult<OpelNode> parsingResult;
     private final String expression;
     private final EvalContext embeddedEvalContext;
 
-    OpelParsingResult(String expression, ParsingResult<ExpressionNode> parsingResult, EvalContext embeddedEvalContext) {
+    OpelParsingResult(String expression, ParsingResult<OpelNode> parsingResult, EvalContext embeddedEvalContext) {
         this.parsingResult = parsingResult;
         this.expression = expression;
         this.embeddedEvalContext = embeddedEvalContext;
@@ -33,7 +33,7 @@ public class OpelParsingResult {
                 .orElseThrow(() -> new OpelException("Expression '" + expression + "' contain's syntax error"));
     }
 
-    private Optional<ExpressionNode> getParsedExpression() {
+    private Optional<OpelNode> getParsedExpression() {
         if (parsingResult.hasErrors()) {
             return Optional.empty();
         }

@@ -1,19 +1,19 @@
 package pl.allegro.tech.opel;
 
-abstract class BinaryOperationExpressionNode implements ExpressionNode {
-    private final ExpressionNode left;
-    private final ExpressionNode right;
+abstract class BinaryOperationExpressionNode implements OpelNode {
+    private final OpelNode left;
+    private final OpelNode right;
 
-    BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right) {
+    BinaryOperationExpressionNode(OpelNode left, OpelNode right) {
         this.left = left;
         this.right = right;
     }
 
-    ExpressionNode left() {
+    OpelNode left() {
         return left;
     }
 
-    ExpressionNode right() {
+    OpelNode right() {
         return right;
     }
 }

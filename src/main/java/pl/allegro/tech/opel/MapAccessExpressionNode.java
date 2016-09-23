@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class MapAccessExpressionNode implements ExpressionNode {
+public class MapAccessExpressionNode implements OpelNode {
     private final static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final ExpressionNode subject;
-    private final ExpressionNode fieldName;
+    private final OpelNode subject;
+    private final OpelNode fieldName;
 
-    public MapAccessExpressionNode(ExpressionNode subject, ExpressionNode fieldName) {
+    public MapAccessExpressionNode(OpelNode subject, OpelNode fieldName) {
         this.subject = subject;
         this.fieldName = fieldName;
     }

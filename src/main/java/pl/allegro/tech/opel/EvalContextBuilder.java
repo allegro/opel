@@ -59,6 +59,14 @@ public class EvalContextBuilder {
         return this;
     }
 
+    public boolean hasVariable(String varName) {
+        return variables.containsKey(varName);
+    }
+
+    public boolean hasFunction(String funName) {
+        return functions.containsKey(funName);
+    }
+
     public EvalContext build() {
         return parentEvalContext.map(this::mergeContexts).orElse(fromMaps(variables, functions));
     }

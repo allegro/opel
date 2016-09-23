@@ -3,13 +3,10 @@ package pl.allegro.tech.opel
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import java.util.concurrent.CompletableFuture
-
 import static java.util.concurrent.CompletableFuture.completedFuture
 import static pl.allegro.tech.opel.OpelEngineBuilder.create
-import static pl.allegro.tech.opel.TestUtil.functions
 
-class OpelEngineDefinitionsIntegrationSpec extends Specification {
+class OpelEngineValDeclarationIntegrationSpec extends Specification {
 
     @Unroll
     def "should parse and evaluate expression with definitions (#input)"() {
@@ -109,6 +106,20 @@ class OpelEngineDefinitionsIntegrationSpec extends Specification {
 
         expect:
         engine.parse(input).eval(evalContext).get() == 4
+    }
+
+    def "context values should be accessible in val declaration"() {
+        given:
+        def engine = create().build()
+        def input = """
+           val a = x + 2;
+           a * a
+           """
+        def evalContext = EvalContextBuilder.create().withVariable('x', completedFuture(1)).build()
+
+        expect:
+        engine.parse(input).eval(evalContext).get() == 9
+
     }
 
 }

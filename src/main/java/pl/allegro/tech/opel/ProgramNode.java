@@ -21,35 +21,17 @@ public class ProgramNode implements OpelNode {
     }
 
     private EvalContext updatedContext(List<DeclarationStatementNode> declarations, EvalContext parentContext) {
-        if (declarations.isEmpty()) {
-            return parentContext;
+        EvalContextBuilder contextBuilder = EvalContextBuilder.create();
+        for (DeclarationStatementNode declaration : declarations) {
+            String name = declaration.getIdentifier().getIdentifier();
+            if (contextBuilder.hasVariable(name)) {
+                throw new OpelException("Illegal override of variable " + declaration.getIdentifier().getIdentifier());
+            }
+            EvalContext valExpressionContext = EvalContextBuilder.mergeContexts(contextBuilder.build(), parentContext);
+            CompletableFuture<Object> value = declaration.getExpression().getValue(valExpressionContext)
+                    .thenApply(Function.identity());
+            contextBuilder.withVariable(name, value);
         }
-
-        final Map<String, CompletableFuture<?>> variables = new HashMap<>();
-
-        final EvalContext updatedContext = new EvalContext() {
-            @Override
-            public Optional<OpelAsyncFunction<?>> getFunction(String name) {
-                return parentContext.getFunction(name);
-            }
-
-            @Override
-            public Optional<CompletableFuture<?>> getVariable(String name) {
-                if (variables.containsKey(name)) {
-                    return Optional.of(variables.get(name));
-                }
-                return parentContext.getVariable(name);
-            }
-        };
-
-        declarations.stream().forEach( d -> {
-            CompletableFuture<?> value = d.getExpression().getValue(updatedContext);
-            if (variables.containsKey(d.getIdentifier().getIdentifier())) {
-                throw new OpelException("Illegal override of variable " + d.getIdentifier().getIdentifier());
-            }
-            variables.put(d.getIdentifier().getIdentifier(), value);
-        });
-
-        return updatedContext;
+        return contextBuilder.withParentEvalContext(parentContext).build();
     }
 }

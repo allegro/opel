@@ -242,7 +242,7 @@ class SumOperatorExpressionNodeSpec extends Specification {
 
     private static class Foo {}
 
-    private static ValueExpressionNode completedVal(Object o) {
-        new ValueExpressionNode(o);
+    private static LiteralExpressionNode completedVal(Object o) {
+        new LiteralExpressionNode(o);
     }
 }

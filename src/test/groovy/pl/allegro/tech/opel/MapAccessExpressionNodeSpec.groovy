@@ -25,8 +25,8 @@ class MapAccessExpressionNodeSpec extends Specification {
         result == 'b'
     }
 
-    private static ValueExpressionNode valueNode(Object o) {
-        new ValueExpressionNode(o);
+    private static LiteralExpressionNode valueNode(Object o) {
+        new LiteralExpressionNode(o);
     }
 
 }

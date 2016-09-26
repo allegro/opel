@@ -17,8 +17,8 @@ class FunctionCallExpressionNodeSpec extends Specification {
 
     }
 
-    private static ValueExpressionNode valueNode(Object o) {
-        new ValueExpressionNode(o);
+    private static LiteralExpressionNode valueNode(Object o) {
+        new LiteralExpressionNode(o);
     }
 
     def functions() {

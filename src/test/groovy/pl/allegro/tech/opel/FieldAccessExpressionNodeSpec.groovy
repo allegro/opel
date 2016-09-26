@@ -14,7 +14,7 @@ class FieldAccessExpressionNodeSpec extends Specification {
         result == 'abc'
     }
 
-    private static ValueExpressionNode valueNode(Object o) {
-        new ValueExpressionNode(o);
+    private static LiteralExpressionNode valueNode(Object o) {
+        new LiteralExpressionNode(o);
     }
 }

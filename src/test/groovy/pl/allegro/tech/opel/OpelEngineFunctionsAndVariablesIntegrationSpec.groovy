@@ -102,7 +102,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should access registered variables in #input"() {
         given:
         def variables = ['var': CompletableFuture.completedFuture(["a": [1, 2]])]
-        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).build()
 
         expect:
         create().build().eval(input, evalContext).get() == expResult
@@ -118,7 +118,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should access registered future variables in #input"() {
         given:
         def variables = ['var': CompletableFuture.completedFuture(["a": [1, 2]])]
-        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).build()
 
         expect:
         create().build().eval(input, evalContext).get() == expResult
@@ -133,7 +133,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should be able to register function and variable with the same name"() {
         given:
         def engine = create()
-                .withVariable("x", CompletableFuture.completedFuture("var"))
+                .withValue("x", CompletableFuture.completedFuture("var"))
                 .withFunction('x', constFunctionReturning('fun'))
                 .build()
         expect:
@@ -144,7 +144,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create().build()
         def vars = ["x": CompletableFuture.completedFuture("var")]
-        def evalContext = EvalContextBuilder.create().withVariables(vars).withFunction('x', constFunctionReturning('fun')).build()
+        def evalContext = EvalContextBuilder.create().withValues(vars).withFunction('x', constFunctionReturning('fun')).build()
 
         expect:
         engine.eval("x + x()", evalContext).get() == "varfun"
@@ -154,7 +154,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should eval value using provided eval context"() {
         given:
         def evalContext = EvalContextBuilder.create()
-                .withCompletedVariable('myVar', 1)
+                .withCompletedValue('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
@@ -172,7 +172,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should be able to use variables and functions from external context"() {
         given:
         def externalContext = EvalContextBuilder.create()
-                .withCompletedVariable('myVar', 1)
+                .withCompletedValue('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
@@ -192,13 +192,13 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should be able to override variables and functions from external context"() {
         given:
         def externalContext = EvalContextBuilder.create()
-                .withCompletedVariable('myVar', 1)
+                .withCompletedValue('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(1))
                 .build()
 
         def evalContext = EvalContextBuilder.create()
                 .withExternalEvalContext(externalContext)
-                .withCompletedVariable('myVar', 100)
+                .withCompletedValue('myVar', 100)
                 .withFunction('myFunc', constFunctionReturning(100))
                 .build();
 
@@ -217,7 +217,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create()
                 .withFunction('myFunc', constFunctionReturning(103))
-                .withCompletedVariable('myVar', 202)
+                .withCompletedValue('myVar', 202)
                 .build()
 
         when:
@@ -237,7 +237,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create()
                 .withFunction('myFunc', constFunctionReturning(103))
-                .withCompletedVariable('myVar', 202)
+                .withCompletedValue('myVar', 202)
                 .build()
 
         when:
@@ -257,12 +257,12 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create()
                 .withFunction('myFunc', constFunctionReturning(2))
-                .withCompletedVariable('myVar', 1)
+                .withCompletedValue('myVar', 1)
                 .build()
 
         def evalContext = EvalContextBuilder.create()
                 .withFunction('myFunc', constFunctionReturning(1000))
-                .withCompletedVariable('myVar', 2000)
+                .withCompletedValue('myVar', 2000)
                 .build()
 
         when:
@@ -282,7 +282,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create()
                 .withFunction('myFunc', constFunctionReturning(103))
-                .withCompletedVariable('myVar', 202)
+                .withCompletedValue('myVar', 202)
                 .build()
 
         when:
@@ -302,7 +302,7 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         given:
         def engine = create()
                 .withFunction('myFunc', constFunctionReturning(103))
-                .withCompletedVariable('myVar', 202)
+                .withCompletedValue('myVar', 202)
                 .build()
 
         when:
@@ -321,13 +321,13 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
     def "should prefere variables and functions from eval context when evaluating parsed expression"() {
         given:
         def engine = create()
-                .withCompletedVariable('myVar', 1)
+                .withCompletedValue('myVar', 1)
                 .withFunction('myFunc', constFunctionReturning(2))
                 .build()
 
         def evalContext = EvalContextBuilder.create()
                 .withFunction('myFunc', constFunctionReturning(1000))
-                .withCompletedVariable('myVar', 2000)
+                .withCompletedValue('myVar', 2000)
                 .build()
 
         when:

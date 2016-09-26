@@ -3,11 +3,11 @@ package pl.allegro.tech.opel;
 import java.util.Collections;
 import java.util.List;
 
-class ExpressionNodeFactory {
+class OpelNodeFactory {
     private final ImplicitConversion implicitConversion;
     private final MethodExecutionFilter methodExecutionFilter;
 
-    public ExpressionNodeFactory(ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
+    public OpelNodeFactory(ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
         this.implicitConversion = implicitConversion;
         this.methodExecutionFilter = methodExecutionFilter;
     }
@@ -24,8 +24,8 @@ class ExpressionNodeFactory {
         return new NegationOperatorExpressionNode(node, implicitConversion);
     }
 
-    public OpelNode valueNode(Object value) {
-        return new ValueExpressionNode(value);
+    public OpelNode literalNode(Object value) {
+        return new LiteralExpressionNode(value);
     }
 
     public OpelNode fieldAccess(OpelNode subject, OpelNode fieldName) {
@@ -64,8 +64,8 @@ class ExpressionNodeFactory {
         return new IdentifierExpressionNode(identifier);
     }
 
-    public OpelNode variableNode(OpelNode variable) {
-        return VariableExpressionNode.create(variable);
+    public OpelNode namedValueNode(OpelNode valueIdentifierNode) {
+        return ValueExpressionNode.create(valueIdentifierNode);
     }
 
     public DeclarationStatementNode declaration(OpelNode identifier, OpelNode expression) {

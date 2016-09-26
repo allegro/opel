@@ -30,6 +30,32 @@ class OpelEngineIntegrationSpec extends Specification {
         "'abc'+'xyz'"       || 'abcxyz'
     }
 
+    @Unroll
+    def 'should evaluate expression ending with ;'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input                || expResult
+        "'Guns N\\' Roses';" || "Guns N' Roses"
+        "1+2 ;"              || 3
+        "1+2  ;   "          || 3
+    }
+
+    def 'should return parsing result with errors for redundant ;'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        !engine.parse(input).isValid()
+
+        where:
+        input << ["123+'abc';;", ";123+'abc';"]
+    }
+
     def "should use left site as primary type for sum operator and throw exception when conversion failed"() {
         def engine = create()
                     .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
@@ -135,7 +161,7 @@ xyz'"""
     def "should throw an exception when comparing invalid objects in #input expression"() {
         given:
         def variables = ['o': CompletableFuture.completedFuture(new Object())]
-        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).build()
 
         when:
         create().build().eval(input, evalContext).get()
@@ -239,7 +265,7 @@ xyz'"""
 
         def variables = ["var": CompletableFuture.completedFuture(["a", "b", "c"]), "arg": CompletableFuture.completedFuture("a")]
 
-        def evalContext = EvalContextBuilder.create().withVariables(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult

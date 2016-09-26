@@ -46,7 +46,7 @@ class OpelEngineMathIntegrationSpec extends Specification {
         given:
         def engine = create().build()
         def variables = ["o": CompletableFuture.completedFuture(new Object())]
-        def evalContext = EvalContextBuilder.create().withVariables(variables).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).build()
 
         when:
         engine.eval(input, evalContext).get()

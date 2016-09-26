@@ -23,13 +23,13 @@ public class ProgramNode implements OpelNode {
         EvalContextBuilder contextBuilder = EvalContextBuilder.create();
         for (DeclarationStatementNode declaration : declarations) {
             String name = declaration.getIdentifier().getIdentifier();
-            if (contextBuilder.hasVariable(name)) {
-                throw new OpelException("Illegal override of variable " + declaration.getIdentifier().getIdentifier());
+            if (contextBuilder.hasValue(name)) {
+                throw new OpelException("Illegal override of value " + declaration.getIdentifier().getIdentifier());
             }
             EvalContext valExpressionContext = EvalContextBuilder.mergeContexts(contextBuilder.build(), externalContext);
             CompletableFuture<Object> value = declaration.getExpression().getValue(valExpressionContext)
                     .thenApply(Function.identity());
-            contextBuilder.withVariable(name, value);
+            contextBuilder.withValue(name, value);
         }
         return contextBuilder.withExternalEvalContext(externalContext).build();
     }

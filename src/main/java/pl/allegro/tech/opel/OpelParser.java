@@ -11,10 +11,10 @@ import java.math.BigDecimal;
 class OpelParser extends BaseParser<OpelNode> {
 
     final ImplicitConversion implicitConversion;
-    final ExpressionNodeFactory nodeFactory;
+    final OpelNodeFactory nodeFactory;
 
     OpelParser(MethodExecutionFilter methodExecutionFilter, ImplicitConversion implicitConversion) {
-        nodeFactory = new ExpressionNodeFactory(implicitConversion, methodExecutionFilter);
+        this.nodeFactory = new OpelNodeFactory(implicitConversion, methodExecutionFilter);
         this.implicitConversion = implicitConversion;
     }
 
@@ -22,7 +22,7 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence(WhiteSpace(), Program(), EOI);
     }
 
-    Rule Value() {
+    Rule Factor() {
         return FirstOf(
                 ifExpression(),
                 Sequence(
@@ -32,7 +32,7 @@ class OpelParser extends BaseParser<OpelNode> {
                         StringLiteral(),
                         ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall()))),
                 Sequence(
-                        Variable(),
+                        NamedValue(),
                         ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
                 Number(),
                 NegativeNumber(),
@@ -45,8 +45,8 @@ class OpelParser extends BaseParser<OpelNode> {
                 push(nodeFactory.ifNode(pop(2), pop(1), pop())));
     }
 
-    Rule Variable() {
-        return Sequence(Identifier(), push(variableNode(pop())));
+    Rule NamedValue() {
+        return Sequence(Identifier(), push(namedValueNode(pop())));
     }
 
     Rule FunctionCall() {
@@ -75,7 +75,7 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule StringContent() {
-        return Sequence(ZeroOrMore(Sequence(TestNot(AnyOf("\r\n'")), ZeroOrMore(escapedChar()), ANY)), push(nodeFactory.valueNode(escapeString(matchOrDefault("")))));
+        return Sequence(ZeroOrMore(Sequence(TestNot(AnyOf("\r\n'")), ZeroOrMore(escapedChar()), ANY)), push(nodeFactory.literalNode(escapeString(matchOrDefault("")))));
     }
 
     Rule escapedChar() {
@@ -124,18 +124,18 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule MultiplyExpression() {
         return Sequence(
-                Value(),
+                Factor(),
                 ZeroOrMore(
                         FirstOf(
-                                Sequence("* ", Value(), push(binaryOperation(Operator.MULTIPLY))),
-                                Sequence("/ ", Value(), push(binaryOperation(Operator.DIV)))
+                                Sequence("* ", Factor(), push(binaryOperation(Operator.MULTIPLY))),
+                                Sequence("/ ", Factor(), push(binaryOperation(Operator.DIV)))
                         )
                 )
         );
     }
 
     Rule Program() {
-        return Sequence(Declarations(), Expression(), push(nodeFactory.program(pop(1), pop())));
+        return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
     }
 
     Rule Declarations() {
@@ -197,7 +197,7 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule NegativeNumber() {
         return Sequence(
                 AnyOf("-"),
-                Value(),
+                Factor(),
                 push(nodeFactory.negationNode(pop())),
                 WhiteSpace()
         );
@@ -217,7 +217,7 @@ class OpelParser extends BaseParser<OpelNode> {
                         ".",
                         Digits()
                 ),
-                push(nodeFactory.valueNode(new BigDecimal(match()))),
+                push(nodeFactory.literalNode(new BigDecimal(match()))),
                 WhiteSpace()
         );
     }
@@ -225,7 +225,7 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule IntNumber() {
         return Sequence(
                 Digits(),
-                push(nodeFactory.valueNode(BigDecimal.valueOf(Integer.parseInt(matchOrDefault("0"))))),
+                push(nodeFactory.literalNode(BigDecimal.valueOf(Integer.parseInt(matchOrDefault("0"))))),
                 WhiteSpace()
         );
     }
@@ -279,18 +279,18 @@ class OpelParser extends BaseParser<OpelNode> {
         return nodeFactory.binaryOperationNode(operator, pop(1), pop());
     }
 
-    protected OpelNode variableNode(OpelNode variableIdentifierNode) {
-        if (variableIdentifierNode instanceof IdentifierExpressionNode) {
-            String identifier = ((IdentifierExpressionNode) variableIdentifierNode).getIdentifier();
+    protected OpelNode namedValueNode(OpelNode valueIdentifierNode) {
+        if (valueIdentifierNode instanceof IdentifierExpressionNode) {
+            String identifier = ((IdentifierExpressionNode) valueIdentifierNode).getIdentifier();
             switch (identifier) {
                 case "true":
-                    return nodeFactory.valueNode(true);
+                    return nodeFactory.literalNode(true);
                 case "false":
-                    return nodeFactory.valueNode(false);
+                    return nodeFactory.literalNode(false);
                 case "null":
-                    return nodeFactory.valueNode(null);
+                    return nodeFactory.literalNode(null);
             }
         }
-        return nodeFactory.variableNode(variableIdentifierNode);
+        return nodeFactory.namedValueNode(valueIdentifierNode);
     }
 }

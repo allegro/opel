@@ -14,6 +14,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
         def engine = create().build()
 
         expect:
+        println engine.parse(input).getParsingErrorMessage()
         engine.eval(input).get() == expResult
 
         where:
@@ -49,7 +50,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
 
         then:
         OpelException ex = thrown()
-        ex.message == 'Unknown variable b'
+        ex.message == 'Unknown value b'
     }
 
     def "should avoid override declared local value"() {
@@ -65,7 +66,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
 
         then:
         OpelException ex = thrown()
-        ex.message == 'Illegal override of variable a'
+        ex.message == 'Illegal override of value a'
     }
 
     def "should avoid declare local value which definition use itself"() {
@@ -80,7 +81,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
 
         then:
         OpelException ex = thrown()
-        ex.message == 'Unknown variable a'
+        ex.message == 'Unknown value a'
     }
 
     def "should end with error when circular definitions are found in #input"() {
@@ -92,7 +93,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
 
         then:
         OpelException ex = thrown()
-        ex.message == 'Unknown variable two'
+        ex.message == 'Unknown value two'
     }
 
     def "should override values from context by declared local value"() {
@@ -102,7 +103,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
            val a = 2;
            a * a
            """
-        def evalContext = EvalContextBuilder.create().withVariable('a', completedFuture(1)).build()
+        def evalContext = EvalContextBuilder.create().withValue('a', completedFuture(1)).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == 4
@@ -115,7 +116,7 @@ class OpelEngineValDeclarationIntegrationSpec extends Specification {
            val a = x + 2;
            a * a
            """
-        def evalContext = EvalContextBuilder.create().withVariable('x', completedFuture(1)).build()
+        def evalContext = EvalContextBuilder.create().withValue('x', completedFuture(1)).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == 9

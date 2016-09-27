@@ -11,15 +11,17 @@ public class EvalContextBuilder {
     private Optional<EvalContext> externalEvalContext = Optional.empty();
 
     static EvalContext fromMaps(Map<String, CompletableFuture<Object>> values, Map<String, OpelAsyncFunction<?>> functions) {
+        Map<String, CompletableFuture<Object>> copiedValues = new HashMap<>(values);
+        Map<String, OpelAsyncFunction<?>> copiedFunctions = new HashMap<>(functions);
         return new EvalContext() {
             @Override
             public Optional<OpelAsyncFunction<?>> getFunction(String name) {
-                return Optional.ofNullable(functions.get(name));
+                return Optional.ofNullable(copiedFunctions.get(name));
             }
 
             @Override
             public Optional<CompletableFuture<?>> getValue(String name) {
-                return Optional.ofNullable(values.get(name));
+                return Optional.ofNullable(copiedValues.get(name));
             }
         };
     }

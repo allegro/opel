@@ -43,4 +43,21 @@ class EvalContextBuilderSpec extends Specification {
         context.getValue('v').get().get() == 'value1'
         context.getFunction('f').get().apply([]).get() == 'from fun 1'
     }
+
+    def "adding new values should not change built context"() {
+        given:
+        def builder = create()
+            .withCompletedValue('a', 'a')
+        def context1 = builder.build()
+
+        when:
+        builder.withCompletedValue('b', 'b')
+        def context2 = builder.build()
+
+        then:
+        context1.getValue('a').isPresent()
+        !context1.getValue('b').isPresent()
+        context2.getValue('a').isPresent()
+        context2.getValue('b').isPresent()
+    }
 }

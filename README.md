@@ -71,6 +71,8 @@ opel supports:
 - registrable functions (i.e. `myFunction('Hello, World!')`)
 - registrable constant values (i.e. `'Hello, ' + WORLD_VALUE`)
 
+More can be found in [documentation](https://github.com/allegro/opel/wiki).
+
 ## Using with Gradle
 
 Basically, all you have to do is to add a compile dependency:

@@ -59,14 +59,14 @@ We discourage using *anonymous functions*, *code blocks*, *loops*, etc.
 
 opel supports:
 
-- primary math and string operations (i.e. `2+2*2`)
+- primary math and string operations (i.e. `2+2*2`, `'Hello' + 'world !'`)
 - relational and equality operators (i.e. `2 == 3`, `2 > 1 != false`)
 - logic operators (i.e. `true && false`, `false || true`)
 - simple map element access (i.e. `map.field` or `map['field']`)
 - simple list element access (i.e. `list[index]`)
 - object method calls (i.e. `'Hello, World!'.length()`)
 - if expressions (i.e. `if (2 > 3) 'a' else 'b'`)
-- defining local final variables (i.e. `val x = 2+2*2; x * x`)
+- defining local constant values (i.e. `val x = 2+2*2; x * x`)
 - registrable implicit conversions (i.e. `2 + '2'` or `'Hello, World!'.myMethod()`)
 - registrable functions (i.e. `myFunction('Hello, World!')`)
 - registrable constant values (i.e. `'Hello, ' + WORLD_VALUE`)

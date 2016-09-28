@@ -341,4 +341,26 @@ class OpelEngineFunctionsAndVariablesIntegrationSpec extends Specification {
         '2 + myVar'                         | 2002
         '3 + myFunc()'                      | 1003
     }
+
+    @Unroll
+    def "should not allow to override built in value (#expression)"() {
+        given:
+        def engine = create()
+                .withCompletedValue('true', false)
+                .withCompletedValue('null', 'abc')
+                .build()
+
+        def context = EvalContextBuilder.create()
+                .withCompletedValue('false', true)
+                .build()
+
+        expect:
+        engine.eval(expression, context).get() == expectResult
+
+        where:
+        expression                   | expectResult
+        'true'                       | true
+        'false'                      | false
+        'null'                       | null
+    }
 }

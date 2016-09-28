@@ -6,7 +6,7 @@ import org.parboiled.support.ParsingResult;
 
 import java.util.concurrent.CompletableFuture;
 
-class OpelEngine {
+public class OpelEngine {
     private final ThreadLocal<OpelParser> parser;
     private final ImplicitConversion implicitConversion;
 

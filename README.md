@@ -19,7 +19,7 @@ this expression will be transformed to equivalent code:
 temperature('Warsaw')
 	.thenCombine(CompletableFuture.completedFuture(32), (l, r) -> l - r)
 	.thenCombine(CompletableFuture.completedFuture(5), (l, r) -> l * r)
-	.thenCombine(CompletableFuture.completedFuture(329 (l, r) -> l / r)
+	.thenCombine(CompletableFuture.completedFuture(9), (l, r) -> l / r)
 ```
 
 ## Contents

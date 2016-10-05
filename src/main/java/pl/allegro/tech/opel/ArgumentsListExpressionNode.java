@@ -1,37 +1,32 @@
 package pl.allegro.tech.opel;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 class ArgumentsListExpressionNode implements OpelNode {
 
-    private final OpelNode head;
-    private final Optional<ArgumentsListExpressionNode> tail;
+    private final List<OpelNode> args;
 
-    public ArgumentsListExpressionNode(OpelNode head) {
-        this.head = head;
-        this.tail = Optional.empty();
-    }
-
-    public ArgumentsListExpressionNode(OpelNode head, ArgumentsListExpressionNode tail) {
-        if (head instanceof ArgumentsListExpressionNode) {
-            throw new IllegalArgumentException("Head can't be " + head.getClass().getSimpleName());
-        }
-        this.head = head;
-        this.tail = Optional.of(tail);
+    ArgumentsListExpressionNode(List<OpelNode> args) {
+        this.args = args;
     }
 
     List<CompletableFuture<?>> getListOfValues(EvalContext context) {
-        List<CompletableFuture<?>> result = new ArrayList<>();
-        tail.ifPresent(t -> result.addAll(t.getListOfValues(context)));
-        result.add(head.getValue(context));
-        return result;
+        return args.stream().map(it -> it.getValue(context)).collect(Collectors.toList());
+    }
+
+    List<OpelNode> getArgs() {
+        return args;
     }
 
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
         throw new UnsupportedOperationException("Can't get value on ArgumentsListExpressionNode");
+    }
+
+    static ArgumentsListExpressionNode empty() {
+        return new ArgumentsListExpressionNode(Collections.emptyList());
     }
 }

@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +37,7 @@ class OpelNodeFactory {
         return new MapAccessExpressionNode(subject, fieldName);
     }
 
-    public OpelNode functionCallNode(OpelNode pop, ArgumentsListExpressionNode functionArguments) {
+    public OpelNode functionCallNode(OpelNode pop, OpelNode functionArguments) {
         return FunctionCallExpressionNode.create(pop, functionArguments);
     }
 
@@ -44,7 +45,7 @@ class OpelNodeFactory {
         return FunctionCallExpressionNode.create(pop);
     }
 
-    public OpelNode methodCall(OpelNode subject, OpelNode methodName, ArgumentsListExpressionNode functionArguments) {
+    public OpelNode methodCall(OpelNode subject, OpelNode methodName, OpelNode functionArguments) {
         return MethodCallExpressionNode.create(subject, methodName, functionArguments, implicitConversion, methodExecutionFilter);
     }
 
@@ -52,12 +53,14 @@ class OpelNodeFactory {
         return MethodCallExpressionNode.create(subject, methodName, implicitConversion, methodExecutionFilter);
     }
 
-    public ArgumentsListExpressionNode argumentsList(OpelNode head, ArgumentsListExpressionNode tail) {
-        return new ArgumentsListExpressionNode(head, tail);
+    public ArgumentsListExpressionNode emptyArgumentsList() {
+        return ArgumentsListExpressionNode.empty();
     }
 
-    public ArgumentsListExpressionNode argumentsList(OpelNode head) {
-        return new ArgumentsListExpressionNode(head);
+    public ArgumentsListExpressionNode argumentsList(OpelNode args, OpelNode arg) {
+        ArrayList<OpelNode> allArgs = new ArrayList<>(((ArgumentsListExpressionNode) args).getArgs());
+        allArgs.add(arg);
+        return new ArgumentsListExpressionNode(allArgs);
     }
 
     public IdentifierExpressionNode identifierNode(String identifier) {
@@ -66,10 +69,6 @@ class OpelNodeFactory {
 
     public OpelNode namedValueNode(OpelNode valueIdentifierNode) {
         return ValueExpressionNode.create(valueIdentifierNode);
-    }
-
-    public DeclarationStatementNode declaration(OpelNode identifier, OpelNode expression) {
-        return new DeclarationStatementNode(identifier, expression);
     }
 
     public DeclarationsListStatementNode emptyDeclarationsList() {
@@ -85,11 +84,7 @@ class OpelNodeFactory {
         return new ProgramNode((DeclarationsListStatementNode)declarationsList, expression);
     }
 
-    public OpelNode listInstantiation(ArgumentsListExpressionNode listElements) {
-        return new ListInstantiationExpressionNode(listElements);
-    }
-
-    public OpelNode emptyListInstantiation() {
-        return new ListInstantiationExpressionNode();
+    public OpelNode listInstantiation(OpelNode listElements) {
+        return new ListInstantiationExpressionNode((ArgumentsListExpressionNode) listElements);
     }
 }

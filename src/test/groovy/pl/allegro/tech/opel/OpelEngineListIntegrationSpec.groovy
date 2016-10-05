@@ -8,7 +8,7 @@ import java.util.concurrent.Executors
 
 import static pl.allegro.tech.opel.OpelEngineBuilder.create
 
-class OpelListInstantiationIntegrationSpec extends Specification {
+class OpelEngineListIntegrationSpec extends Specification {
     @Unroll
     def 'should instantiation list in #input'() {
         given:
@@ -27,6 +27,22 @@ class OpelListInstantiationIntegrationSpec extends Specification {
         "['a', 2, 'c'].size()"         || 3
         "val x = ['a', 'b']; x.get(0)" || 'a'
         "val x = 1; [x, x, 2]"         || [1, 1, 2]
+    }
+
+    @Unroll
+    def "should access list element by [] notation (#input)"() {
+        given:
+        def engine = create()
+                .withCompletedValue('aList', ['a', 'b', 'c'])
+                .build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input                          || expResult
+        "aList[1]"                     || 'b'
+        "['a', 'b'][0]"                || 'a'
     }
 
 }

@@ -62,7 +62,7 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule MethodCall() {
         return Sequence(". ", Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.methodCall(pop(2), pop(1), getFunctionArguments())));
+                push(nodeFactory.methodCall(pop(2), pop(1), pop())));
     }
 
     Rule ZeroArgumentMethodCall() {
@@ -97,12 +97,17 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule ArgumentsFunctionCall() {
         return Sequence(Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.functionCallNode(pop(1), getFunctionArguments())));
+                push(nodeFactory.functionCallNode(pop(1), pop())));
     }
 
     Rule Args() {
-        return Sequence(Expression(),
-                ZeroOrMore(", ", Expression(), push(nodeFactory.argumentsList(pop(), getFunctionArguments()))));
+        return Sequence(
+                push(nodeFactory.emptyArgumentsList()),
+                FirstOf(Sequence(Arg(), ZeroOrMore(", ", Arg())), EMPTY));
+    }
+
+    Rule Arg() {
+        return Sequence(Expression(), push(nodeFactory.argumentsList(pop(1), pop())));
     }
 
     Rule Identifier() {
@@ -234,23 +239,12 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule ListInstantiation() {
-        return FirstOf(EmptyList(), NonEmptyList());
-
-    }
-
-    Rule EmptyList() {
-        return Sequence(
-                "[ ",
-                "] ",
-                push(nodeFactory.emptyListInstantiation()));
-    }
-
-    Rule NonEmptyList() {
         return Sequence(
                 "[ ",
                 Args(),
                 "] ",
-                push(nodeFactory.listInstantiation(getElements())));
+                push(nodeFactory.listInstantiation(pop())));
+
     }
 
     @SuppressSubnodes
@@ -287,18 +281,6 @@ class OpelParser extends BaseParser<OpelNode> {
             result.append(string.charAt(i));
         }
         return result.toString();
-    }
-
-    protected ArgumentsListExpressionNode getFunctionArguments() {
-        return getElements();
-    }
-
-    protected ArgumentsListExpressionNode getElements() {
-        OpelNode node = pop();
-        if (node instanceof ArgumentsListExpressionNode) {
-            return (ArgumentsListExpressionNode) node;
-        }
-        return nodeFactory.argumentsList(node);
     }
 
     protected OpelNode binaryOperation(Operator operator) {

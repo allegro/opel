@@ -2,12 +2,14 @@ buildscript {
     repositories { mavenCentral() }
     dependencies {
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.3.1'
     }
 }
 
 plugins {
     id 'com.bmuschko.nexus' version '2.3.1'
     id 'pl.allegro.tech.build.axion-release' version '1.4.0'
+    id "me.champeau.gradle.jmh" version "0.3.1"
 }
 
 apply plugin: 'java'
@@ -34,6 +36,12 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
 
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+
+    jmh group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+}
+
+jmh {
+    jmhVersion = '1.14.1'
 }
 
 test {

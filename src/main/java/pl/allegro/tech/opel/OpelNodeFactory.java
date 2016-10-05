@@ -84,4 +84,12 @@ class OpelNodeFactory {
     public OpelNode program(OpelNode declarationsList, OpelNode expression) {
         return new ProgramNode((DeclarationsListStatementNode)declarationsList, expression);
     }
+
+    public OpelNode listInstantiation(ArgumentsListExpressionNode listElements) {
+        return new ListInstantiationExpressionNode(listElements);
+    }
+
+    public OpelNode emptyListInstantiation() {
+        return new ListInstantiationExpressionNode();
+    }
 }

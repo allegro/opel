@@ -22,6 +22,10 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence(WhiteSpace(), Program(), EOI);
     }
 
+    Rule Program() {
+        return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
+    }
+
     Rule Factor() {
         return FirstOf(
                 ifExpression(),
@@ -33,6 +37,9 @@ class OpelParser extends BaseParser<OpelNode> {
                         ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall()))),
                 Sequence(
                         NamedValue(),
+                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
+                Sequence(
+                        ListInstantiation(),
                         ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
                 Number(),
                 NegativeNumber(),
@@ -65,7 +72,7 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule FieldAccess() {
         return FirstOf(
-                Sequence("[ ", AdditiveExpression(), "] ", push(nodeFactory.mapAccess(pop(1), pop()))),
+                Sequence("[ ", Expression(), "] ", push(nodeFactory.mapAccess(pop(1), pop()))),
                 Sequence(". ", Identifier(), push(nodeFactory.fieldAccess(pop(1), pop())))
         );
     }
@@ -132,10 +139,6 @@ class OpelParser extends BaseParser<OpelNode> {
                         )
                 )
         );
-    }
-
-    Rule Program() {
-        return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
     }
 
     Rule Declarations() {
@@ -230,6 +233,26 @@ class OpelParser extends BaseParser<OpelNode> {
         );
     }
 
+    Rule ListInstantiation() {
+        return FirstOf(EmptyList(), NonEmptyList());
+
+    }
+
+    Rule EmptyList() {
+        return Sequence(
+                "[ ",
+                "] ",
+                push(nodeFactory.emptyListInstantiation()));
+    }
+
+    Rule NonEmptyList() {
+        return Sequence(
+                "[ ",
+                Args(),
+                "] ",
+                push(nodeFactory.listInstantiation(getElements())));
+    }
+
     @SuppressSubnodes
     Rule Digits() {
         return OneOrMore(Digit());
@@ -267,7 +290,10 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     protected ArgumentsListExpressionNode getFunctionArguments() {
+        return getElements();
+    }
 
+    protected ArgumentsListExpressionNode getElements() {
         OpelNode node = pop();
         if (node instanceof ArgumentsListExpressionNode) {
             return (ArgumentsListExpressionNode) node;

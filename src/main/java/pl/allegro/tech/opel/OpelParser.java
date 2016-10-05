@@ -29,22 +29,18 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule Factor() {
         return FirstOf(
                 ifExpression(),
-                Sequence(
-                        FunctionCall(),
-                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
-                Sequence(
-                        StringLiteral(),
-                        ZeroOrMore(MethodCall())),
-                Sequence(
-                        NamedValue(),
-                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
-                Sequence(
-                        ListInstantiation(),
-                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
+                Sequence(Object(), Train()),
                 Number(),
-                NegativeNumber(),
-                Sequence("( ", Expression(), ") ")
+                NegativeNumber()
         );
+    }
+
+    Rule Object() {
+        return FirstOf(FunctionCall(),StringLiteral(), NamedValue(), ListInstantiation(), Sequence("( ", Expression(), ") "));
+    }
+
+    Rule Train() {
+        return ZeroOrMore(FirstOf(MethodCall(), FieldAccess()));
     }
 
     Rule ifExpression() {
@@ -54,10 +50,6 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule NamedValue() {
         return Sequence(Identifier(), push(namedValueNode(pop())));
-    }
-
-    Rule FunctionCall() {
-        return FirstOf(ArgumentsFunctionCall(), ZeroArgumentFunctionCall());
     }
 
     Rule MethodCall() {
@@ -84,13 +76,7 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence("\\", ANY);
     }
 
-    Rule ZeroArgumentFunctionCall() {
-        return Sequence(Identifier(), "( ", ") ",
-                push(nodeFactory.functionCallNode(pop())));
-
-    }
-
-    Rule ArgumentsFunctionCall() {
+    Rule FunctionCall() {
         return Sequence(Identifier(), "( ", Args(), ") ",
                 push(nodeFactory.functionCallNode(pop(1), pop())));
     }

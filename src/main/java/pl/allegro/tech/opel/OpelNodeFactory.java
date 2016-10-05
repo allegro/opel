@@ -41,16 +41,8 @@ class OpelNodeFactory {
         return FunctionCallExpressionNode.create(pop, functionArguments);
     }
 
-    public OpelNode functionCallNode(OpelNode pop) {
-        return FunctionCallExpressionNode.create(pop);
-    }
-
     public OpelNode methodCall(OpelNode subject, OpelNode methodName, OpelNode functionArguments) {
         return MethodCallExpressionNode.create(subject, methodName, functionArguments, implicitConversion, methodExecutionFilter);
-    }
-
-    public OpelNode methodCall(OpelNode subject, OpelNode methodName) {
-        return MethodCallExpressionNode.create(subject, methodName, implicitConversion, methodExecutionFilter);
     }
 
     public ArgumentsListExpressionNode emptyArgumentsList() {

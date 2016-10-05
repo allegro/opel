@@ -18,15 +18,18 @@ class OpelEngineListIntegrationSpec extends Specification {
         engine.eval(input).get() == expResult
 
         where:
-        input                          || expResult
-        "[]"                           || []
-        "['a']"                        || ['a']
-        "['a', 'b']"                   || ['a', 'b']
-        "['a', 'b', 'c']"              || ['a', 'b', 'c']
-        "['a', 2, 'c']"                || ['a', 2, 'c']
-        "['a', 2, 'c'].size()"         || 3
-        "val x = ['a', 'b']; x.get(0)" || 'a'
-        "val x = 1; [x, x, 2]"         || [1, 1, 2]
+        input                            || expResult
+        "[]"                             || []
+        "([])"                           || []
+        "['a']"                          || ['a']
+        "['a', 'b']"                     || ['a', 'b']
+        "['a', 'b', 'c']"                || ['a', 'b', 'c']
+        "['a', 2, 'c']"                  || ['a', 2, 'c']
+        "['a', 2, 'c'].size()"           || 3
+        "(['a', 2, 'c']).size()"         || 3
+        "val x = ['a', 'b']; x.get(0)"   || 'a'
+        "val x = ['a', 'b']; (x).get(0)" || 'a'
+        "val x = 1; [x, x, 2]"           || [1, 1, 2]
     }
 
     @Unroll

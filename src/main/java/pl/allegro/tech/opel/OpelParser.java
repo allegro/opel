@@ -31,16 +31,16 @@ class OpelParser extends BaseParser<OpelNode> {
                 ifExpression(),
                 Sequence(
                         FunctionCall(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
+                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
                 Sequence(
                         StringLiteral(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall()))),
+                        ZeroOrMore(MethodCall())),
                 Sequence(
                         NamedValue(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
+                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
                 Sequence(
                         ListInstantiation(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
+                        ZeroOrMore(FirstOf(MethodCall(), FieldAccess()))),
                 Number(),
                 NegativeNumber(),
                 Sequence("( ", Expression(), ") ")
@@ -63,11 +63,6 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule MethodCall() {
         return Sequence(". ", Identifier(), "( ", Args(), ") ",
                 push(nodeFactory.methodCall(pop(2), pop(1), pop())));
-    }
-
-    Rule ZeroArgumentMethodCall() {
-        return Sequence(". ", Identifier(), "( ", ") ",
-                push(nodeFactory.methodCall(pop(1), pop())));
     }
 
     Rule FieldAccess() {

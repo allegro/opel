@@ -36,7 +36,14 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Object() {
-        return FirstOf(FunctionCall(),StringLiteral(), NamedValue(), ListInstantiation(), Sequence("( ", Expression(), ") "));
+        return FirstOf(
+                FunctionCall(),
+                StringLiteral(),
+                NamedValue(),
+                ListInstantiation(),
+                MapInstantiation(),
+                Sequence("( ", Expression(), ") ")
+        );
     }
 
     Rule Train() {
@@ -226,6 +233,29 @@ class OpelParser extends BaseParser<OpelNode> {
                 "] ",
                 push(nodeFactory.listInstantiation(pop())));
 
+    }
+
+    Rule MapInstantiation() {
+        return Sequence(
+            "{ ",
+            Pairs(),
+            "} ",
+            push(nodeFactory.mapInstantiationExpressionNode(pop()))
+        );
+    }
+
+    Rule Pairs() {
+        return Sequence(
+                push(nodeFactory.emptyPairsListNode()),
+                FirstOf(Sequence(Pair(), ZeroOrMore(", ", Pair())), EMPTY));
+    }
+
+    Rule Pair() {
+        return Sequence(MapInstantiationKey(), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
+    }
+
+    Rule MapInstantiationKey() {
+        return FirstOf(StringLiteral(), Identifier());
     }
 
     @SuppressSubnodes

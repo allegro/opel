@@ -10,7 +10,7 @@ import static pl.allegro.tech.opel.OpelEngineBuilder.create
 
 class OpelEngineListIntegrationSpec extends Specification {
     @Unroll
-    def 'should instantiation list in #input'() {
+    def 'should instantiate list as defined in #input'() {
         given:
         def engine = create().build()
 
@@ -26,6 +26,7 @@ class OpelEngineListIntegrationSpec extends Specification {
         "['a', 'b', 'c']"                || ['a', 'b', 'c']
         "['a', 2, 'c']"                  || ['a', 2, 'c']
         "['a', 2, 'c'].size()"           || 3
+        "['a', 2, ['1', '2']].size()"    || 3
         "(['a', 2, 'c']).size()"         || 3
         "val x = ['a', 'b']; x.get(0)"   || 'a'
         "val x = ['a', 'b']; (x).get(0)" || 'a'

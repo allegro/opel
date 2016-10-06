@@ -19,7 +19,7 @@ class MethodCallExpressionNodeSpec extends Specification {
 
     def "should call a method with one argument"() {
         given:
-        def arguments = Optional.of(new ArgumentsListExpressionNode(valueNode(0)))
+        def arguments = Optional.of(new ArgumentsListExpressionNode([valueNode(0)]))
         def methodCallNode = new MethodCallExpressionNode(valueNode(['a']), 'get', arguments, new ImplicitConversion(), MethodExecutionFilters.ALLOW_ALL)
 
         when:
@@ -31,7 +31,7 @@ class MethodCallExpressionNodeSpec extends Specification {
 
     def "should call a method with two arguments"() {
         given:
-        def arguments = Optional.of(new ArgumentsListExpressionNode(valueNode('second'), new ArgumentsListExpressionNode(valueNode('first'))))
+        def arguments = Optional.of(new ArgumentsListExpressionNode([valueNode('first'), valueNode('second')]))
         def methodCallNode = new MethodCallExpressionNode(valueNode(new Foo()), 'method', arguments, new ImplicitConversion(), MethodExecutionFilters.ALLOW_ALL)
 
         when:
@@ -43,7 +43,7 @@ class MethodCallExpressionNodeSpec extends Specification {
 
     def "should not allow to call any method when using DENY_ALL method execution filter"() {
         given:
-        def arguments = Optional.of(new ArgumentsListExpressionNode(valueNode('second'), new ArgumentsListExpressionNode(valueNode('first'))))
+        def arguments = Optional.of(new ArgumentsListExpressionNode([valueNode('first'), valueNode('second')]))
         def methodCallNode = new MethodCallExpressionNode(valueNode(new Foo()), 'method', arguments, new ImplicitConversion(), MethodExecutionFilters.DENY_ALL)
 
         when:
@@ -55,7 +55,7 @@ class MethodCallExpressionNodeSpec extends Specification {
 
     def "should not call any method not passing custom method execution filter"() {
         given:
-        def arguments = Optional.of(new ArgumentsListExpressionNode(valueNode('second'), new ArgumentsListExpressionNode(valueNode('first'))))
+        def arguments = Optional.of(new ArgumentsListExpressionNode([valueNode('first'), valueNode('second')]))
         def methodNameFilter = { Object subject, Method method -> return method.getName() != 'method' }
         def methodCallNode = new MethodCallExpressionNode(valueNode(new Foo()), 'method', arguments, new ImplicitConversion(), methodNameFilter)
 

@@ -355,6 +355,8 @@ xyz'"""
         "if (1 == 1 && 2 == 3) 'a' else 'b'"                           || 'b'
         "if (1 == 1 && 2 == 3) 1 == 2 && 2 == 2 else 1 == 1 && 2 == 2" || true
         "if (false || false || false || true) 'a' else 'b'"            || 'a'
+        "(if (true) 'a' else 'b').length()"                            || 1
+
     }
 
     def 'should calculate only left value when condition result result is true'() {

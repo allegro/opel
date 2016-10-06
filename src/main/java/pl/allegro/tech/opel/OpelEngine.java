@@ -1,10 +1,12 @@
 package pl.allegro.tech.opel;
 
 import org.parboiled.Parboiled;
+import org.parboiled.errors.ParseError;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class OpelEngine {
     private final ThreadLocal<OpelParser> parser;
@@ -33,7 +35,24 @@ public class OpelEngine {
 
     public CompletableFuture<?> eval(String expression) {
         ParsingResult<OpelNode> parsingResult = getParsingResult(expression);
+        if (parsingResult.hasErrors()) {
+            throw new OpelException("Error parsing expression: '" + expression + "'" + additionalErrorMsg(parsingResult));
+        }
         return parsingResult.resultValue.getValue(embeddedEvalContext);
+    }
+
+    private String additionalErrorMsg(ParsingResult<OpelNode> parsingResult) {
+        boolean hasAdditionalMsg = parsingResult.parseErrors.stream()
+                .map(ParseError::getErrorMessage)
+                .anyMatch(it -> it != null);
+        if (hasAdditionalMsg) {
+            return parsingResult.parseErrors.stream()
+                    .map(ParseError::getErrorMessage)
+                    .filter(it -> it != null)
+                    .collect(Collectors.joining(";", " because of ", ""));
+        } else {
+            return "";
+        }
     }
 
     public CompletableFuture<?> eval(String expression, EvalContext evalContext) {

@@ -11,10 +11,6 @@ public class ListInstantiationExpressionNode implements OpelNode {
         this.listElements = listElements;
     }
 
-    public ListInstantiationExpressionNode() {
-        listElements = ArgumentsListExpressionNode.empty();
-    }
-
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
         return FutureUtil.sequence(toListOfFutureOfObjects(listElements.getListOfValues(context)));

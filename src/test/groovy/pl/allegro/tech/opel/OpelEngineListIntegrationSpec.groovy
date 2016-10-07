@@ -10,7 +10,7 @@ import static pl.allegro.tech.opel.OpelEngineBuilder.create
 
 class OpelEngineListIntegrationSpec extends Specification {
     @Unroll
-    def 'should instantiation list in #input'() {
+    def 'should instantiate list in #input'() {
         given:
         def engine = create().build()
 

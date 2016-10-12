@@ -56,7 +56,7 @@ public class MethodCallExpressionNode implements OpelNode {
 
     private Object methodCall(Object subject, String methodName, List<?> args) {
         try {
-            Class[] argsTypes = args.stream().map(Object::getClass).toArray(Class[]::new);
+            Class[] argsTypes = args.stream().map(it -> it == null ? null : it.getClass()).toArray(Class[]::new);
             ImmutablePair<Object, Method> chosenMethod = implicitConversion.getAllPossibleConversions(subject)
                     .map(convertedSubject -> ImmutablePair.of(convertedSubject, findMatchingMethod(convertedSubject, methodName, args)))
                     .filter(it -> it.getRight().isPresent())
@@ -97,6 +97,9 @@ public class MethodCallExpressionNode implements OpelNode {
         for (int i = 0; i < expectedArgumentsTypes.length; i++) {
             Class<?> expectedType = expectedArgumentsTypes[i];
             Object arg = args.get(i);
+            if (arg == null) {
+                continue;
+            }
             Class<?> givenType = arg.getClass();
             if (!ClassUtils.isAssignable(givenType, expectedType) && !implicitConversion.hasConverter(arg, expectedType)) {
                 return false;

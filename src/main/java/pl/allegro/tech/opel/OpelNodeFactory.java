@@ -79,4 +79,18 @@ class OpelNodeFactory {
     public OpelNode listInstantiation(OpelNode listElements) {
         return new ListInstantiationExpressionNode((ArgumentsListExpressionNode) listElements);
     }
+
+    public OpelNode functionInstantiation(OpelNode arguments, OpelNode body) {
+        return new FunctionInstantiationExpressionNode((IdentifiersListNode) arguments, body);
+    }
+
+    public OpelNode emptyIdentifiersList() {
+        return IdentifiersListNode.empty();
+    }
+
+    public OpelNode identifiersList(OpelNode identifiers, OpelNode identifier) {
+        ArrayList<OpelNode> allArgs = new ArrayList<>(((IdentifiersListNode) identifiers).getIdentifiers());
+        allArgs.add(identifier);
+        return new IdentifiersListNode(allArgs);
+    }
 }

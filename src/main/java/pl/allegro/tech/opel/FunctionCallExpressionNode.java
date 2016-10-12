@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 class FunctionCallExpressionNode implements OpelNode {
     private final String functionName;
@@ -37,10 +38,28 @@ class FunctionCallExpressionNode implements OpelNode {
 
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
-        OpelAsyncFunction<?> function = context
-                .getFunction(functionName)
-                .orElseThrow(() -> new RuntimeException("Function " + functionName + " not found."));
+        CompletableFuture<OpelAsyncFunction<?>> function = getFunction(context);
         List<CompletableFuture<?>> args = arguments.map(ags -> ags.getListOfValues(context)).orElse(Collections.emptyList());
-        return function.apply(args);
+        return function.thenCompose(fun -> fun.apply(args));
+    }
+
+    private CompletableFuture<OpelAsyncFunction<?>> getFunction(EvalContext context) {
+        Optional<CompletableFuture<OpelAsyncFunction<?>>> functionFromRegisteredFunctions = context.getFunction(functionName).map(CompletableFuture::completedFuture);
+        return functionFromRegisteredFunctions.orElseGet(() -> getFunctionFromValue(context));
+    }
+
+    private CompletableFuture<OpelAsyncFunction<?>> getFunctionFromValue(EvalContext context) {
+        CompletableFuture<? extends OpelAsyncFunction<?>> opelAsyncFunctionCompletableFuture = context.getValue(functionName)
+                .map(val -> val.thenApply(it -> getValueAsFunction(it)))
+                .orElseThrow(() -> new OpelException("Function '" + functionName + "' not found"));
+        return opelAsyncFunctionCompletableFuture.thenApply(Function.identity());
+    }
+
+    private OpelAsyncFunction<?> getValueAsFunction(Object it) {
+        if (it instanceof OpelAsyncFunction) {
+            return (OpelAsyncFunction<?>) it;
+        } else {
+            throw new OpelException("Value '" + functionName + "' is not a function");
+        }
     }
 }

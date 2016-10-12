@@ -24,6 +24,7 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         "val square = (x) -> x * x; square(2)"  || 4
         "val a = 3; val f = x -> a*x*x; f(2)"   || 12
         "val f = (x, y) -> x*x + y*y; f(2, 3)"  || 13
+        "(x, y) -> {x*x + y*y}(1, 2)"           || 5
     }
 
     @Unroll
@@ -61,6 +62,33 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
     }
 
     @Unroll
+    def 'should create higher-order function and call it'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input << ["""
+                    val f = a -> {
+                        b -> {a*2+b}
+                    };
+                    f(2)(3)
+                """,
+                """
+                    val f = a -> {
+                        b -> {
+                            c -> a*a*a + b*b + c
+                        }
+                    };
+                    f(1)(2)(3)
+                """,
+        ]
+        expResult << [7, 8]
+    }
+
+    @Unroll
     def 'should return function in #input'() {
         given:
         def engine = create().build()
@@ -81,6 +109,24 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         "val f = x -> x * 3; f"                                  || [completedFuture(4)]                     | 12
         "val f = (x, y) -> x*x + y*y*y; f"                       || [completedFuture(1), completedFuture(2)] | 9
         "val f = (x, y) -> x*x + y*y*y; val g = x -> f(x, 2); g" || [completedFuture(3)]                     | 17
+    }
+
+    def 'should create higher-order function and return inner function'() {
+        given:
+        def engine = create().build()
+        def input = """
+                    val f = a -> {
+                        b -> {a*2+b}
+                    };
+                    f(2)
+                """
+
+        when:
+        def function = engine.eval(input).get()
+
+        then:
+        function instanceof OpelAsyncFunction
+        function.apply([completedFuture(3)]).get() == 7
     }
 
     @Unroll

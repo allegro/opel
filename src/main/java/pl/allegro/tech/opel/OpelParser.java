@@ -41,7 +41,7 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule Object() {
         return FirstOf(
-                FunctionCall(),
+                FunctionCallChain(),
                 StringLiteral(),
                 FunctionInstantiation(),
                 NamedValue(),
@@ -87,9 +87,26 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence("\\", ANY);
     }
 
+    Rule FunctionCallChain() {
+        return Sequence(FunctionCall(), ArgsGroups(), push(nodeFactory.functionChain(pop(1), pop())));
+    }
+
+    Rule ArgsGroups() {
+        return Sequence(
+                push(nodeFactory.emptyArgsGroup()),
+                ZeroOrMore(ArgsGroup(), EMPTY)
+        );
+    }
+
+    Rule ArgsGroup() {
+        return Sequence("( ", Args(), ") ", push(nodeFactory.argsGroup(pop(1), pop())));
+    }
+
     Rule FunctionCall() {
-        return Sequence(Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.functionCallNode(pop(1), pop())));
+        return FirstOf(
+                Sequence(Identifier(), "( ", Args(), ") ", push(nodeFactory.functionCallNode(pop(1), pop()))),
+                Sequence(FunctionInstantiation(), "( ", Args(), ") ", push(nodeFactory.anonymousFunctionCallNode(pop(1), pop())))
+        );
     }
 
     Rule Args() {

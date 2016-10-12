@@ -37,8 +37,12 @@ class OpelNodeFactory {
         return new MapAccessExpressionNode(subject, fieldName);
     }
 
-    public OpelNode functionCallNode(OpelNode pop, OpelNode functionArguments) {
-        return FunctionCallExpressionNode.create(pop, functionArguments);
+    public OpelNode functionCallNode(OpelNode identifier, OpelNode functionArguments) {
+        return FunctionCallExpressionNode.create(identifier, functionArguments);
+    }
+
+    public OpelNode anonymousFunctionCallNode(OpelNode expression, OpelNode functionArguments) {
+        return new AnonymousFunctionExpressionNode(expression, (ArgumentsListExpressionNode) functionArguments);
     }
 
     public OpelNode methodCall(OpelNode subject, OpelNode methodName, OpelNode functionArguments) {
@@ -92,5 +96,19 @@ class OpelNodeFactory {
         ArrayList<OpelNode> allArgs = new ArrayList<>(((IdentifiersListNode) identifiers).getIdentifiers());
         allArgs.add(identifier);
         return new IdentifiersListNode(allArgs);
+    }
+
+    public OpelNode emptyArgsGroup() {
+        return ArgsGroupNode.empty();
+    }
+
+    public OpelNode argsGroup(OpelNode argsGroups, OpelNode argsGroup) {
+        List<ArgumentsListExpressionNode> allGroups = new ArrayList<>(((ArgsGroupNode) argsGroups).getGroups());
+        allGroups.add((ArgumentsListExpressionNode) argsGroup);
+        return new ArgsGroupNode(allGroups);
+    }
+
+    public OpelNode functionChain(OpelNode expression, OpelNode argsGroups) {
+        return new FunctionChainExpressionNode(expression, (ArgsGroupNode) argsGroups);
     }
 }

@@ -15,25 +15,12 @@ class FunctionCallExpressionNode implements OpelNode {
         this.arguments = Optional.of(arguments);
     }
 
-    private FunctionCallExpressionNode(String functionName) {
-        this.functionName = functionName;
-        this.arguments = Optional.empty();
-    }
-
     static FunctionCallExpressionNode create(OpelNode identifier, OpelNode args) {
         if (identifier instanceof IdentifierExpressionNode && args instanceof ArgumentsListExpressionNode) {
             String identifierValue = ((IdentifierExpressionNode) identifier).getIdentifier();
             return new FunctionCallExpressionNode(identifierValue, (ArgumentsListExpressionNode) args);
         }
         throw new IllegalArgumentException("Cannot create FunctionCallExpressionNode from " + identifier.getClass().getSimpleName() + " and " + args.getClass().getSimpleName());
-    }
-
-    static FunctionCallExpressionNode create(OpelNode identifier) {
-        if (identifier instanceof IdentifierExpressionNode) {
-            String identifierValue = ((IdentifierExpressionNode) identifier).getIdentifier();
-            return new FunctionCallExpressionNode(identifierValue);
-        }
-        throw new IllegalArgumentException("Cannot create FunctionCallExpressionNode from " + identifier.getClass().getSimpleName());
     }
 
     @Override

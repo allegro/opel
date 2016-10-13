@@ -105,7 +105,8 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule FunctionCall() {
         return FirstOf(
                 Sequence(Identifier(), "( ", Args(), ") ", push(nodeFactory.functionCallNode(pop(1), pop()))),
-                Sequence(FunctionInstantiation(), "( ", Args(), ") ", push(nodeFactory.anonymousFunctionCallNode(pop(1), pop())))
+                Sequence(FunctionInstantiation(), "( ", Args(), ") ", push(nodeFactory.anonymousFunctionCallNode(pop(1), pop()))),
+                Sequence("( ", Expression(), ") ", "( ", Args(), ") ", push(nodeFactory.functionChain(pop(1), nodeFactory.argsGroup(pop()))))
         );
     }
 

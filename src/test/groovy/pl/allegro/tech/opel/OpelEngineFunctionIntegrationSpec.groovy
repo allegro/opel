@@ -183,4 +183,25 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         ]
     }
 
+    @Unroll
+    def "should call function on expression which return function"() {
+        given:
+        def engine = create().build()
+        def input = """
+            val foo = x -> x*x;
+            val bar = x -> -x;
+            (if (x > 0) foo else bar)(x)
+            """
+        def context = EvalContextBuilder.create().withCompletedValue('x', x).build()
+
+        expect:
+        engine.eval(input, context).get() == expResult
+
+        where:
+        x  || expResult
+        0  || 0
+        -2 || 2
+        2  || 4
+    }
+
 }

@@ -1,6 +1,7 @@
 package pl.allegro.tech.opel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -106,6 +107,10 @@ class OpelNodeFactory {
         List<ArgumentsListExpressionNode> allGroups = new ArrayList<>(((ArgsGroupNode) argsGroups).getGroups());
         allGroups.add((ArgumentsListExpressionNode) argsGroup);
         return new ArgsGroupNode(allGroups);
+    }
+
+    public OpelNode argsGroup(OpelNode argsGroup) {
+        return new ArgsGroupNode(Arrays.asList((ArgumentsListExpressionNode) argsGroup));
     }
 
     public OpelNode functionChain(OpelNode expression, OpelNode argsGroups) {

@@ -13,7 +13,7 @@ public class ArgsGroupNode implements OpelNode {
 
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
-        return null;
+        throw new UnsupportedOperationException("Can't get value on ArgsGroupNode");
     }
 
     public static OpelNode empty() {

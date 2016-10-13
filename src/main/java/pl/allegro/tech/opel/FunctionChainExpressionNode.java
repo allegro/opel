@@ -25,7 +25,7 @@ public class FunctionChainExpressionNode implements OpelNode {
             if (fun instanceof OpelAsyncFunction) {
                 return ((OpelAsyncFunction) fun).apply(argsGroup.getListOfValues(context));
             }
-            throw new OpelException("Can use '" + fun.getClass().getSimpleName() + "' as a function");
+            throw new OpelException("Can't use '" + fun.getClass().getSimpleName() + "' as a function");
         });
     }
 }

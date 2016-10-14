@@ -272,7 +272,7 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule FunctionBody() {
         return FirstOf(
                 Expression(),
-                Sequence("{ ", Body(), "} ", push(pop())), push(pop()));
+                Sequence("{ ", Body(), "} "));
     }
 
     Rule ListInstantiation() {

@@ -162,7 +162,7 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         "val fun = (x, y) -> x*y; fun(2, 3, 4, 5)" || 6
     }
 
-    def 'should avoid access to val defined in function outsite its'() {
+    def 'should avoid access to val defined in function outside its'() {
         given:
         def engine = create().build()
 
@@ -202,6 +202,35 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         0  || 0
         -2 || 2
         2  || 4
+    }
+
+    def "should izolate val declaration scope"() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input << ["""
+                    val b = 5;
+                    val f = a -> {
+                        val b = 10;
+                        a*b
+                    };
+                    f(2)
+                """,
+                  """
+                    val b = 5;
+                    val f = a -> {
+                        val b = 10;
+                        a*b
+                    };
+                    f(b)
+                """,
+        ]
+        expResult << [20, 50]
+
     }
 
 }

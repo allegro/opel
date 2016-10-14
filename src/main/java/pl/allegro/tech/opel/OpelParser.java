@@ -23,6 +23,10 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Program() {
+        return Body();
+    }
+
+    Rule Body() {
         return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
     }
 
@@ -36,7 +40,14 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Object() {
-        return FirstOf(FunctionCall(),StringLiteral(), NamedValue(), ListInstantiation(), Sequence("( ", Expression(), ") "));
+        return FirstOf(
+                FunctionCallChain(),
+                StringLiteral(),
+                FunctionInstantiation(),
+                NamedValue(),
+                ListInstantiation(),
+                Sequence("( ", Expression(), ") ")
+        );
     }
 
     Rule Train() {
@@ -76,9 +87,27 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence("\\", ANY);
     }
 
+    Rule FunctionCallChain() {
+        return Sequence(FunctionCall(), ArgsGroups(), push(nodeFactory.functionChain(pop(1), pop())));
+    }
+
+    Rule ArgsGroups() {
+        return Sequence(
+                push(nodeFactory.emptyArgsGroup()),
+                ZeroOrMore(ArgsGroup(), EMPTY)
+        );
+    }
+
+    Rule ArgsGroup() {
+        return Sequence("( ", Args(), ") ", push(nodeFactory.argsGroup(pop(1), pop())));
+    }
+
     Rule FunctionCall() {
-        return Sequence(Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.functionCallNode(pop(1), pop())));
+        return FirstOf(
+                Sequence(Identifier(), "( ", Args(), ") ", push(nodeFactory.functionCallNode(pop(1), pop()))),
+                Sequence(FunctionInstantiation(), "( ", Args(), ") ", push(nodeFactory.anonymousFunctionCallNode(pop(1), pop()))),
+                Sequence("( ", Expression(), ") ", "( ", Args(), ") ", push(nodeFactory.functionChain(pop(1), nodeFactory.argsGroup(pop()))))
+        );
     }
 
     Rule Args() {
@@ -219,13 +248,39 @@ class OpelParser extends BaseParser<OpelNode> {
         );
     }
 
+    Rule FunctionInstantiation() {
+        return Sequence(FunctionArgs(), "-> ", FunctionBody(), push(nodeFactory.functionInstantiation(pop(1), pop())));
+    }
+
+    Rule FunctionArgs() {
+        return FirstOf(
+                Sequence("( ", IdentifiersList(), ") "),
+                Sequence(push(nodeFactory.emptyIdentifiersList()), IdentifiersListItem())
+                );
+    }
+
+    Rule IdentifiersList() {
+        return Sequence(
+                push(nodeFactory.emptyIdentifiersList()),
+                FirstOf(Sequence(IdentifiersListItem(), ZeroOrMore(", ", IdentifiersListItem())), EMPTY));
+    }
+
+    Rule IdentifiersListItem() {
+        return Sequence(Identifier(), push(nodeFactory.identifiersList(pop(1), pop())));
+    }
+
+    Rule FunctionBody() {
+        return FirstOf(
+                Expression(),
+                Sequence("{ ", Body(), "} "));
+    }
+
     Rule ListInstantiation() {
         return Sequence(
                 "[ ",
                 Args(),
                 "] ",
                 push(nodeFactory.listInstantiation(pop())));
-
     }
 
     @SuppressSubnodes

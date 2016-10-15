@@ -94,8 +94,8 @@ class OpelEngineMathIntegrationSpec extends Specification {
                 .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
                 .build()
         def evalContext = EvalContextBuilder.create()
-                .withFunction('fun', constFunctionReturning('abc'))
-                .withFunctions(functions())
+                .withCompletedValue('fun', constFunctionReturning('abc'))
+                .withValues(functions())
                 .build()
 
         expect:

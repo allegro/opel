@@ -10,11 +10,11 @@ class EvalContextBuilderSpec extends Specification {
         given:
         def primary = create()
                 .withCompletedValue('vv', 'value1')
-                .withFunction('ff', constFunctionReturning('from fun 1'))
+                .withCompletedValue('ff', constFunctionReturning('from fun 1'))
                 .build()
         def secondary = create()
                 .withCompletedValue('v', 'value2')
-                .withFunction('f', constFunctionReturning('from fun 2'))
+                .withCompletedValue('f', constFunctionReturning('from fun 2'))
                 .build()
 
         when:
@@ -22,18 +22,18 @@ class EvalContextBuilderSpec extends Specification {
 
         then:
         context.getValue('v').get().get() == 'value2'
-        context.getFunction('f').get().apply([]).get() == 'from fun 2'
+        context.getValue('f').get().get().apply([]).get() == 'from fun 2'
     }
 
     def "should create merged context using elements from primary context"() {
         given:
         def primary = create()
                         .withCompletedValue('v', 'value1')
-                        .withFunction('f', constFunctionReturning('from fun 1'))
+                        .withCompletedValue('f', constFunctionReturning('from fun 1'))
                         .build()
         def secondary = create()
                         .withCompletedValue('v', 'value2')
-                        .withFunction('f', constFunctionReturning('from fun 2'))
+                        .withCompletedValue('f', constFunctionReturning('from fun 2'))
                         .build()
 
         when:
@@ -41,7 +41,7 @@ class EvalContextBuilderSpec extends Specification {
 
         then:
         context.getValue('v').get().get() == 'value1'
-        context.getFunction('f').get().apply([]).get() == 'from fun 1'
+        context.getValue('f').get().get().apply([]).get() == 'from fun 1'
     }
 
     def "adding new values should not change built context"() {

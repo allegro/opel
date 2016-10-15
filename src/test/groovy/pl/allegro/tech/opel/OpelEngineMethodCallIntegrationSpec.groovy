@@ -22,7 +22,7 @@ class OpelEngineMethodCallIntegrationSpec extends Specification {
 
         def variables = ["var": CompletableFuture.completedFuture(["a", "b", "c"]), "arg": CompletableFuture.completedFuture("a")]
 
-        def evalContext = EvalContextBuilder.create().withValues(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
+        def evalContext = EvalContextBuilder.create().withValues(variables).withCompletedValue("fun", constFunctionReturning('Hello, World!')).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult

@@ -25,14 +25,9 @@ class FunctionCallExpressionNode implements OpelNode {
 
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
-        CompletableFuture<OpelAsyncFunction<?>> function = getFunction(context);
+        CompletableFuture<OpelAsyncFunction<?>> function = getFunctionFromValue(context);
         List<CompletableFuture<?>> args = arguments.map(ags -> ags.getListOfValues(context)).orElse(Collections.emptyList());
         return function.thenCompose(fun -> fun.apply(args));
-    }
-
-    private CompletableFuture<OpelAsyncFunction<?>> getFunction(EvalContext context) {
-        Optional<CompletableFuture<OpelAsyncFunction<?>>> functionFromRegisteredFunctions = context.getFunction(functionName).map(CompletableFuture::completedFuture);
-        return functionFromRegisteredFunctions.orElseGet(() -> getFunctionFromValue(context));
     }
 
     private CompletableFuture<OpelAsyncFunction<?>> getFunctionFromValue(EvalContext context) {

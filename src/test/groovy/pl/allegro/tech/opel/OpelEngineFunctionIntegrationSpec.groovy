@@ -204,7 +204,7 @@ class OpelEngineFunctionIntegrationSpec extends Specification {
         2  || 4
     }
 
-    def "should izolate val declaration scope"() {
+    def "should isolate val declaration scope"() {
         given:
         def engine = create().build()
 

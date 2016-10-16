@@ -94,7 +94,40 @@ class OpelEngineConversionsIntegrationSpec extends Specification {
         input          || expResult
         "'opel'.rev()" || "lepo"
         "'abc'.rev()"  || "cba"
+    }
 
+    def "should use left site as primary type for sum operator and throw exception when conversion failed"() {
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
+        def variables = ['o': CompletableFuture.completedFuture(new Object())]
+
+        when:
+        engine.eval(input, EvalContext.fromMaps(variables, [:])).get()
+
+        then:
+        thrown Exception
+
+        where:
+        input << ["123+'abc'"]
+    }
+
+    @Unroll
+    def "should firstly convert right argument when comparing objects in #input"() {
+        given:
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input          || expResult
+        " '55' <  7  " || true //compare strings
+        "  55  > '7' " || true //compare numbers
     }
 
     public static class RichString {

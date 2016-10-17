@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 public class OpelEngineBuilder {
     private final Map<String, OpelAsyncFunction<?>> embeddedFunctions = new HashMap<>();
-    private final Map<String, CompletableFuture<Object>> embeddedValues = new HashMap<>();
+    private final Map<String, CompletableFuture<?>> embeddedValues = new HashMap<>();
     private MethodExecutionFilter methodExecutionFilter = MethodExecutionFilters.ALLOW_ALL;
     private final ImplicitConversion implicitConversion;
 
@@ -35,7 +35,7 @@ public class OpelEngineBuilder {
         return this;
     }
 
-    public OpelEngineBuilder withValues(Map<String, CompletableFuture<Object>> values) {
+    public OpelEngineBuilder withValues(Map<String, CompletableFuture<?>> values) {
         embeddedValues.putAll(values);
         return this;
     }

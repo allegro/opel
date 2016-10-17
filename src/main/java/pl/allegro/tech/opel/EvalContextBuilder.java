@@ -6,12 +6,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class EvalContextBuilder {
-    private final Map<String, CompletableFuture<Object>> values = new HashMap<>();
+    private final Map<String, CompletableFuture<?>> values = new HashMap<>();
     private final Map<String, OpelAsyncFunction<?>> functions = new HashMap<>();
     private Optional<EvalContext> externalEvalContext = Optional.empty();
 
-    static EvalContext fromMaps(Map<String, CompletableFuture<Object>> values, Map<String, OpelAsyncFunction<?>> functions) {
-        Map<String, CompletableFuture<Object>> copiedValues = new HashMap<>(values);
+    static EvalContext fromMaps(Map<String, CompletableFuture<?>> values, Map<String, OpelAsyncFunction<?>> functions) {
+        Map<String, CompletableFuture<?>> copiedValues = new HashMap<>(values);
         Map<String, OpelAsyncFunction<?>> copiedFunctions = new HashMap<>(functions);
         return new EvalContext() {
             @Override
@@ -40,7 +40,7 @@ public class EvalContextBuilder {
         return this;
     }
 
-    public EvalContextBuilder withValues(Map<String, CompletableFuture<Object>> values) {
+    public EvalContextBuilder withValues(Map<String, CompletableFuture<?>> values) {
         this.values.putAll(values);
         return this;
     }

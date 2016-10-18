@@ -300,11 +300,7 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Pair() {
-        return Sequence(MapInstantiationKey(), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
-    }
-
-    Rule MapInstantiationKey() {
-        return FirstOf(StringLiteral(), Identifier());
+        return Sequence(FirstOf(Identifier(), Factor()), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
     }
 
     @SuppressSubnodes

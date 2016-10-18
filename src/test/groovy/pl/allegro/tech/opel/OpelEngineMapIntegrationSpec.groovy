@@ -15,12 +15,29 @@ class OpelEngineMapIntegrationSpec extends Specification {
         engine.eval(input).get() == new HashMap(expResult)
 
         where:
-        input              || expResult
-        "{}"               || [:]
-        "{'x':2}"          || [x: 2]
-        "{x:2}"            || [x: 2]
-        "({'x': 2 })"      || [x: 2]
-        "{'x': 2, 'y':3 }" || [x: 2, y: 3]
+        input                || expResult
+        "{}"                 || [:]
+        "{'x':2}"            || [x: 2]
+        "{x:2}"              || [x: 2]
+        "({'x': 2 })"        || [x: 2]
+        "{'x': 2, 'y':3 }"   || [x: 2, y: 3]
+        "{(1+1): 2, 'y':3 }" || [(BigDecimal.valueOf(2)): 2, y: 3]
+    }
+
+    @Unroll
+    def 'should instantiate map with expression key defined in #input'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == new HashMap(expResult)
+
+        where:
+        input                              || expResult
+        "{('x' + 'x'):2}"                  || [xx: 2]
+        "{[].size():2}"                    || [0: 2]
+        "{([].size()):2}"                  || [0: 2]
+        "{(['1'].size()):['1'].size()}"    || [1: 1]
     }
 
     @Unroll
@@ -69,9 +86,10 @@ class OpelEngineMapIntegrationSpec extends Specification {
         engine.eval(input).get() == expResult
 
         where:
-        input                         || expResult
-        "aMap.get('get')"             || fun
-        "(aMap.get)('get')"           || 'getget'
+        input                            || expResult
+        "aMap.get('get')"                || fun
+        "(aMap.get)('get')"              || 'getget'
+        "({get: x->x+x}.get('get'))('g')"|| 'gg'
+        "({get: x->x+x}.get)('get')"     || 'getget'
     }
-
 }

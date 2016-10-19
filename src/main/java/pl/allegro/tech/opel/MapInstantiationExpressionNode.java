@@ -1,6 +1,7 @@
 package pl.allegro.tech.opel;
 
 import java.util.AbstractMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,7 @@ public class MapInstantiationExpressionNode implements OpelNode {
     }
 
     @Override
-    public CompletableFuture<?> getValue(EvalContext context) {
+    public CompletableFuture<Map<Object, Object>> getValue(EvalContext context) {
         return FutureUtil.sequence(pairs.getPairs().stream()
                 .map(pair -> pair.getKey().getValue(context)
                         .thenCombine(pair.getValue().getValue(context), this::entry))

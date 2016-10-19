@@ -21,7 +21,6 @@ class OpelEngineMapIntegrationSpec extends Specification {
         "{x:2}"              || [x: 2]
         "({'x': 2 })"        || [x: 2]
         "{'x': 2, 'y':3 }"   || [x: 2, y: 3]
-        "{(1+1): 2, 'y':3 }" || [(BigDecimal.valueOf(2)): 2, y: 3]
     }
 
     @Unroll
@@ -34,10 +33,27 @@ class OpelEngineMapIntegrationSpec extends Specification {
 
         where:
         input                              || expResult
+        "{(1+1): 2, 'y':3 }"               || [(BigDecimal.valueOf(2)): 2, y: 3]
         "{('x' + 'x'):2}"                  || [xx: 2]
         "{[].size():2}"                    || [0: 2]
         "{([].size()):2}"                  || [0: 2]
         "{(['1'].size()):['1'].size()}"    || [1: 1]
+    }
+
+    @Unroll
+    def 'should assign map to a value in #input and access an element '() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input                                    || expResult
+        "val x = {('x' + 'x'):2}; x.xx"          || 2
+        "val x = {('x' + 'x'):2}; x.get('xx')"   || 2
+        "val x = {('x' + 'x'):2}; x.xx"          || 2
+        "val x = {('x' + 'x'):2}; x['xx']"       || 2
     }
 
     @Unroll

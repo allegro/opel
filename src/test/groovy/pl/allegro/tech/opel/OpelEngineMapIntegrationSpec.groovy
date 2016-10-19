@@ -3,6 +3,8 @@ package pl.allegro.tech.opel
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.concurrent.CompletableFuture
+
 import static pl.allegro.tech.opel.OpelEngineBuilder.create
 
 class OpelEngineMapIntegrationSpec extends Specification {
@@ -18,9 +20,22 @@ class OpelEngineMapIntegrationSpec extends Specification {
         input                || expResult
         "{}"                 || [:]
         "{'x':2}"            || [x: 2]
-        "{x:2}"              || [x: 2]
         "({'x': 2 })"        || [x: 2]
         "{'x': 2, 'y':3 }"   || [x: 2, y: 3]
+    }
+
+    @Unroll
+    def 'should instantiate map with variable as key defined in #input'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input, EvalContextBuilder.create().withValues(values).build()).get() == new HashMap(expResult)
+
+        where:
+        input                           || values                                          || expResult
+        "{x: (6+7), 'y':3 }"            || [x: CompletableFuture.completedFuture(2.0)]     || [(2.0): 13, y: 3]
+        "{x: 6+7, 'y':3 }"              || [x: CompletableFuture.completedFuture(2.0)]     || [(2.0): 13, y: 3]
     }
 
     @Unroll
@@ -29,7 +44,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
         def engine = create().build()
 
         expect:
-        engine.eval(input).get() == new HashMap(expResult)
+        engine.eval(input).get() == expResult
 
         where:
         input                              || expResult
@@ -68,7 +83,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
 
         where:
         input                   || expResult
-        "{x:2, y:3}['x']"       || 2
+        "{'x':2, 'y':3}['x']"   || 2
         "aMap['b']"             || 'y'
         "aMap[true == false]"   || 'xyz'
     }
@@ -85,7 +100,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
 
         where:
         input                          || expResult
-        "{x:2, y:5}.x"                 || 2
+        "{'x':2, 'y':5}.x"             || 2
         "aMap.b"                       || 'y'
     }
 
@@ -102,10 +117,10 @@ class OpelEngineMapIntegrationSpec extends Specification {
         engine.eval(input).get() == expResult
 
         where:
-        input                            || expResult
-        "aMap.get('get')"                || fun
-        "(aMap.get)('get')"              || 'getget'
-        "({get: x->x+x}.get('get'))('g')"|| 'gg'
-        "({get: x->x+x}.get)('get')"     || 'getget'
+        input                              || expResult
+        "aMap.get('get')"                  || fun
+        "(aMap.get)('get')"                || 'getget'
+        "({'get': x->x+x}.get('get'))('g')"|| 'gg'
+        "({'get': x->x+x}.get)('get')"     || 'getget'
     }
 }

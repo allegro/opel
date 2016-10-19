@@ -300,7 +300,7 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule Pair() {
-        return Sequence(FirstOf(Identifier(), Factor()), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
+        return Sequence(Factor(), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
     }
 
     @SuppressSubnodes

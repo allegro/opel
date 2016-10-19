@@ -9,7 +9,7 @@ public class EvalContextBuilder {
     private final Map<String, CompletableFuture<?>> values = new HashMap<>();
     private Optional<EvalContext> externalEvalContext = Optional.empty();
 
-    static EvalContext fromMaps(Map<String, CompletableFuture<?>> values) {
+    static EvalContext fromMap(Map<String, CompletableFuture<?>> values) {
         Map<String, CompletableFuture<?>> copiedValues = new HashMap<>(values);
         return name -> Optional.ofNullable(copiedValues.get(name));
     }
@@ -60,8 +60,8 @@ public class EvalContextBuilder {
     }
 
     public EvalContext build() {
-        return externalEvalContext.map(external -> mergeContexts(fromMaps(values), external))
-                .orElseGet(() -> fromMaps(values));
+        return externalEvalContext.map(external -> mergeContexts(fromMap(values), external))
+                .orElseGet(() -> fromMap(values));
     }
 
     static EvalContext mergeContexts(EvalContext primary, EvalContext secondary) {

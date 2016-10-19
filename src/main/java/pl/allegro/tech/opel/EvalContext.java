@@ -10,6 +10,6 @@ public interface EvalContext {
     Optional<CompletableFuture<?>> getValue(String name);
 
     static EvalContext empty() {
-        return EvalContextBuilder.fromMaps(Collections.emptyMap());
+        return EvalContextBuilder.fromMap(Collections.emptyMap());
     }
 }

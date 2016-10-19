@@ -77,11 +77,11 @@ class OpelNodeFactory {
         return new DeclarationsListStatementNode(declarations, new DeclarationStatementNode(identifier, expression));
     }
 
-    public OpelNode program(OpelNode declarationsList, OpelNode expression) {
+    public ProgramNode program(OpelNode declarationsList, OpelNode expression) {
         return new ProgramNode((DeclarationsListStatementNode)declarationsList, expression);
     }
 
-    public OpelNode listInstantiation(OpelNode listElements) {
+    public ListInstantiationExpressionNode listInstantiation(OpelNode listElements) {
         return new ListInstantiationExpressionNode((ArgumentsListExpressionNode) listElements);
     }
 
@@ -115,5 +115,19 @@ class OpelNodeFactory {
 
     public OpelNode functionChain(OpelNode expression, OpelNode argsGroups) {
         return new FunctionChainExpressionNode(expression, (ArgsGroupNode) argsGroups);
+    }
+
+    public PairsListNode pairs(OpelNode pairs, OpelNode key, OpelNode value) {
+        ArrayList<PairNode> allPairs = new ArrayList<>(((PairsListNode) pairs).getPairs());
+        allPairs.add(new PairNode(key, value));
+        return new PairsListNode(allPairs);
+    }
+
+    public PairsListNode emptyPairsListNode() {
+        return new PairsListNode(Collections.emptyList());
+    }
+
+    public OpelNode mapInstantiationExpressionNode(OpelNode pairs) {
+        return new MapInstantiationExpressionNode((PairsListNode)pairs);
     }
 }

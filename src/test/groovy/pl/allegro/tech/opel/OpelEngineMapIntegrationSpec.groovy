@@ -48,7 +48,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
 
         where:
         input                              || expResult
-        "{(1+1): 2, 'y':3 }"               || [(BigDecimal.valueOf(2)): 2, y: 3]
+        "{(1+1.5): 2, 'y':3 }"             || [2.5: 2, y: 3]
         "{('x' + 'x'):2}"                  || [xx: 2]
         "{[].size():2}"                    || [0: 2]
         "{([].size()):2}"                  || [0: 2]

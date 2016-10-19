@@ -7,11 +7,9 @@ import java.util.concurrent.CompletableFuture;
 
 public interface EvalContext {
 
-    Optional<OpelAsyncFunction<?>> getFunction(String name);
-
     Optional<CompletableFuture<?>> getValue(String name);
 
     static EvalContext empty() {
-        return EvalContextBuilder.fromMaps(Collections.emptyMap(), Collections.emptyMap());
+        return EvalContextBuilder.fromMap(Collections.emptyMap());
     }
 }

@@ -1,5 +1,7 @@
 package pl.allegro.tech.opel
 
+import java.util.concurrent.CompletableFuture
+
 class TestUtil {
     static functions() {
         def functionWith2Args = function({ args ->
@@ -12,12 +14,12 @@ class TestUtil {
             args[0]
         })
         return [
-                'zero'        : (OpelAsyncFunction<?>) constFunctionReturning('zero'),
-                'one'         : (OpelAsyncFunction<?>) constFunctionReturning('one'),
-                'twoArgsFunc' : functionWith2Args,
-                'oneTwoThree' : constFunctionReturning('one two three'),
-                'fourArgsFunc': functionWith4Args,
-                'identity'    : identityFunction
+                'zero'        : CompletableFuture.completedFuture((OpelAsyncFunction<?>) constFunctionReturning('zero')),
+                'one'         : CompletableFuture.completedFuture((OpelAsyncFunction<?>) constFunctionReturning('one')),
+                'twoArgsFunc' : CompletableFuture.completedFuture(functionWith2Args),
+                'oneTwoThree' : CompletableFuture.completedFuture(constFunctionReturning('one two three')),
+                'fourArgsFunc': CompletableFuture.completedFuture(functionWith4Args),
+                'identity'    : CompletableFuture.completedFuture(identityFunction)
         ];
     }
 

@@ -147,7 +147,7 @@ xyz'"""
     def 'should evaluate comparison with function: #input'() {
         given:
         def engine = create().build()
-        def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
+        def evalContext = EvalContextBuilder.create().withValues(functions()).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -289,10 +289,10 @@ xyz'"""
         def counter1 = 0;
         def counter2 = 0;
         def functions = [
-                'one'        : (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) },
-                'twoArgsFunc': (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) }
+                'one'        : CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) }),
+                'twoArgsFunc': CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) })
         ];
-        def evalContext = EvalContextBuilder.create().withFunctions(functions).build()
+        def evalContext = EvalContextBuilder.create().withValues(functions).build()
 
         when:
         def result = engine.eval("if (true) one() else twoArgsFunc()", evalContext).get()

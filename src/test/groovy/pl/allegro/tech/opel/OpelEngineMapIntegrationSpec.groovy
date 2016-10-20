@@ -18,7 +18,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
 
         where:
         input                || expResult
-        "{}"                 || [:]
+        "{:}"                || [:]
         "{'x':2}"            || [x: 2]
         "({'x': 2 })"        || [x: 2]
         "{'x': 2, 'y':3 }"   || [x: 2, y: 3]
@@ -122,5 +122,21 @@ class OpelEngineMapIntegrationSpec extends Specification {
         "(aMap.get)('get')"                || 'getget'
         "({'get': x->x+x}.get('get'))('g')"|| 'gg'
         "({'get': x->x+x}.get)('get')"     || 'getget'
+    }
+
+    @Unroll
+    def 'should not parse #input'() {
+        given:
+        def engine = create().build()
+
+        when:
+        engine.eval(input)
+
+        then:
+        OpelException ex = thrown()
+        ex.getMessage() == "Error parsing expression: '${input}'"
+
+        where:
+        input << ["{}", "{ }", "{, }", "{  , }"]
     }
 }

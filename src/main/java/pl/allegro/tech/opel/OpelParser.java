@@ -296,7 +296,8 @@ class OpelParser extends BaseParser<OpelNode> {
     Rule Pairs() {
         return Sequence(
                 push(nodeFactory.emptyPairsListNode()),
-                FirstOf(Sequence(Pair(), ZeroOrMore(", ", Pair())), EMPTY));
+                FirstOf(Sequence(Pair(), ZeroOrMore(", ", Pair())), ": ")
+        );
     }
 
     Rule Pair() {

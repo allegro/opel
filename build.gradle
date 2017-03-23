@@ -41,7 +41,10 @@ dependencies {
 }
 
 jmh {
-    jmhVersion = '1.14.1'
+    jmhVersion = '1.17.4'
+    warmupIterations = 8 // Time to spend at each warmup iteration.
+    iterations = 16 // Number of measurement iterations to do.
+    fork = 1 // How many times to forks a single benchmark. Use 0 to disable forking altogether
 }
 
 test {

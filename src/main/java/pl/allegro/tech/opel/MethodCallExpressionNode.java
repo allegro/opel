@@ -17,6 +17,7 @@ public class MethodCallExpressionNode implements OpelNode {
     private final Optional<ArgumentsListExpressionNode> arguments;
     private final ImplicitConversion implicitConversion;
     private final MethodExecutionFilter methodExecutionFilter;
+    private final Map<MethodCacheKey, Method> methodsCache = new HashMap<>();
 
     public MethodCallExpressionNode(OpelNode subject, String identifier, Optional<ArgumentsListExpressionNode> arguments, ImplicitConversion implicitConversion, MethodExecutionFilter methodExecutionFilter) {
         this.subject = subject;
@@ -71,11 +72,15 @@ public class MethodCallExpressionNode implements OpelNode {
     }
 
     private Optional<Method> findMatchingMethod(Object subject, String methodName, List<?> args) {
-        return Arrays.stream(subject.getClass().getMethods())
-                .filter(method -> methodExecutionFilter.filter(subject, method))
-                .filter(method -> method.getName().equals(methodName))
-                .filter(method -> areArgsMatchForMethod(method, args))
-                .findFirst();
+        Method matchingMethod = methodsCache.computeIfAbsent(new MethodCacheKey(subject.getClass(), args),
+                cacheKey -> Arrays.stream(subject.getClass().getMethods())
+                        .filter(m -> m.getName().equals(methodName))
+                        .filter(m -> methodExecutionFilter.filter(subject, m))
+                        .filter(m -> areArgsMatchForMethod(m, args))
+                        .findFirst()
+                        .orElse(null));
+
+        return Optional.ofNullable(matchingMethod);
     }
 
     private Object[] convertArgs(List<?> args, Method chosenMethod) {
@@ -107,5 +112,29 @@ public class MethodCallExpressionNode implements OpelNode {
 
     private CompletableFuture<Object> javaGenericsFix(CompletableFuture<?> it) {
         return it.thenApply(Function.identity());
+    }
+
+    private class MethodCacheKey {
+        private final Class c;
+        private final List<?> args;
+
+        MethodCacheKey(Class c, List<?> args) {
+            this.c = c;
+            this.args = args;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            MethodCacheKey that = (MethodCacheKey) o;
+            return Objects.equals(c, that.c) &&
+                    Objects.equals(args, that.args);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(c, args);
+        }
     }
 }

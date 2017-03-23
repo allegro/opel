@@ -6,8 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class OpelEngineBuilder {
-    private final Map<String, OpelAsyncFunction<?>> embeddedFunctions = new HashMap<>();
-    private final Map<String, CompletableFuture<Object>> embeddedValues = new HashMap<>();
+    private final Map<String, CompletableFuture<?>> embeddedValues = new HashMap<>();
     private MethodExecutionFilter methodExecutionFilter = MethodExecutionFilters.ALLOW_ALL;
     private final ImplicitConversion implicitConversion;
 
@@ -20,13 +19,20 @@ public class OpelEngineBuilder {
         return new OpelEngineBuilder();
     }
 
+    /**
+     * use withValue method
+     */
+    @Deprecated
     public OpelEngineBuilder withFunction(String functionName, OpelAsyncFunction<?> function) {
-        embeddedFunctions.put(functionName, function);
-        return this;
+        return withCompletedValue(functionName, function);
     }
 
+    /**
+     * use withValues method
+     */
+    @Deprecated
     public OpelEngineBuilder withFunctions(Map<String, OpelAsyncFunction<?>> functions) {
-        embeddedFunctions.putAll(functions);
+        functions.forEach((name, function) -> withCompletedValue(name, function));
         return this;
     }
 
@@ -35,7 +41,7 @@ public class OpelEngineBuilder {
         return this;
     }
 
-    public OpelEngineBuilder withValues(Map<String, CompletableFuture<Object>> values) {
+    public OpelEngineBuilder withValues(Map<String, CompletableFuture<?>> values) {
         embeddedValues.putAll(values);
         return this;
     }
@@ -57,7 +63,6 @@ public class OpelEngineBuilder {
 
     public OpelEngine build() {
         EvalContext context = EvalContextBuilder.create()
-                .withFunctions(embeddedFunctions)
                 .withValues(embeddedValues)
                 .build();
         return new OpelEngine(methodExecutionFilter, implicitConversion, context);

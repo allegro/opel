@@ -1,5 +1,7 @@
 package pl.allegro.tech.opel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,28 +38,26 @@ class OpelNodeFactory {
         return new MapAccessExpressionNode(subject, fieldName);
     }
 
-    public OpelNode functionCallNode(OpelNode pop, ArgumentsListExpressionNode functionArguments) {
-        return FunctionCallExpressionNode.create(pop, functionArguments);
+    public OpelNode functionCallNode(OpelNode identifier, OpelNode functionArguments) {
+        return FunctionCallExpressionNode.create(identifier, functionArguments);
     }
 
-    public OpelNode functionCallNode(OpelNode pop) {
-        return FunctionCallExpressionNode.create(pop);
+    public OpelNode anonymousFunctionCallNode(OpelNode expression, OpelNode functionArguments) {
+        return new AnonymousFunctionExpressionNode(expression, (ArgumentsListExpressionNode) functionArguments);
     }
 
-    public OpelNode methodCall(OpelNode subject, OpelNode methodName, ArgumentsListExpressionNode functionArguments) {
+    public OpelNode methodCall(OpelNode subject, OpelNode methodName, OpelNode functionArguments) {
         return MethodCallExpressionNode.create(subject, methodName, functionArguments, implicitConversion, methodExecutionFilter);
     }
 
-    public OpelNode methodCall(OpelNode subject, OpelNode methodName) {
-        return MethodCallExpressionNode.create(subject, methodName, implicitConversion, methodExecutionFilter);
+    public ArgumentsListExpressionNode emptyArgumentsList() {
+        return ArgumentsListExpressionNode.empty();
     }
 
-    public ArgumentsListExpressionNode argumentsList(OpelNode head, ArgumentsListExpressionNode tail) {
-        return new ArgumentsListExpressionNode(head, tail);
-    }
-
-    public ArgumentsListExpressionNode argumentsList(OpelNode head) {
-        return new ArgumentsListExpressionNode(head);
+    public ArgumentsListExpressionNode argumentsList(OpelNode args, OpelNode arg) {
+        ArrayList<OpelNode> allArgs = new ArrayList<>(((ArgumentsListExpressionNode) args).getArgs());
+        allArgs.add(arg);
+        return new ArgumentsListExpressionNode(allArgs);
     }
 
     public IdentifierExpressionNode identifierNode(String identifier) {
@@ -66,10 +66,6 @@ class OpelNodeFactory {
 
     public OpelNode namedValueNode(OpelNode valueIdentifierNode) {
         return ValueExpressionNode.create(valueIdentifierNode);
-    }
-
-    public DeclarationStatementNode declaration(OpelNode identifier, OpelNode expression) {
-        return new DeclarationStatementNode(identifier, expression);
     }
 
     public DeclarationsListStatementNode emptyDeclarationsList() {
@@ -81,7 +77,57 @@ class OpelNodeFactory {
         return new DeclarationsListStatementNode(declarations, new DeclarationStatementNode(identifier, expression));
     }
 
-    public OpelNode program(OpelNode declarationsList, OpelNode expression) {
+    public ProgramNode program(OpelNode declarationsList, OpelNode expression) {
         return new ProgramNode((DeclarationsListStatementNode)declarationsList, expression);
+    }
+
+    public ListInstantiationExpressionNode listInstantiation(OpelNode listElements) {
+        return new ListInstantiationExpressionNode((ArgumentsListExpressionNode) listElements);
+    }
+
+    public OpelNode functionInstantiation(OpelNode arguments, OpelNode body) {
+        return new FunctionInstantiationExpressionNode((IdentifiersListNode) arguments, body);
+    }
+
+    public OpelNode emptyIdentifiersList() {
+        return IdentifiersListNode.empty();
+    }
+
+    public OpelNode identifiersList(OpelNode identifiers, OpelNode identifier) {
+        ArrayList<OpelNode> allArgs = new ArrayList<>(((IdentifiersListNode) identifiers).getIdentifiers());
+        allArgs.add(identifier);
+        return new IdentifiersListNode(allArgs);
+    }
+
+    public OpelNode emptyArgsGroup() {
+        return ArgsGroupNode.empty();
+    }
+
+    public OpelNode argsGroup(OpelNode argsGroups, OpelNode argsGroup) {
+        List<ArgumentsListExpressionNode> allGroups = new ArrayList<>(((ArgsGroupNode) argsGroups).getGroups());
+        allGroups.add((ArgumentsListExpressionNode) argsGroup);
+        return new ArgsGroupNode(allGroups);
+    }
+
+    public OpelNode argsGroup(OpelNode argsGroup) {
+        return new ArgsGroupNode(Arrays.asList((ArgumentsListExpressionNode) argsGroup));
+    }
+
+    public OpelNode functionChain(OpelNode expression, OpelNode argsGroups) {
+        return new FunctionChainExpressionNode(expression, (ArgsGroupNode) argsGroups);
+    }
+
+    public PairsListNode pairs(OpelNode pairs, OpelNode key, OpelNode value) {
+        ArrayList<PairNode> allPairs = new ArrayList<>(((PairsListNode) pairs).getPairs());
+        allPairs.add(new PairNode(key, value));
+        return new PairsListNode(allPairs);
+    }
+
+    public PairsListNode emptyPairsListNode() {
+        return new PairsListNode(Collections.emptyList());
+    }
+
+    public OpelNode mapInstantiationExpressionNode(OpelNode pairs) {
+        return new MapInstantiationExpressionNode((PairsListNode)pairs);
     }
 }

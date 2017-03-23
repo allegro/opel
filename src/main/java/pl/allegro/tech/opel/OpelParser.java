@@ -22,22 +22,37 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence(WhiteSpace(), Program(), EOI);
     }
 
+    Rule Program() {
+        return Body();
+    }
+
+    Rule Body() {
+        return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
+    }
+
     Rule Factor() {
         return FirstOf(
                 ifExpression(),
-                Sequence(
-                        FunctionCall(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
-                Sequence(
-                        StringLiteral(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall()))),
-                Sequence(
-                        NamedValue(),
-                        ZeroOrMore(FirstOf(MethodCall(), ZeroArgumentMethodCall(), FieldAccess()))),
+                Sequence(Object(), Train()),
                 Number(),
-                NegativeNumber(),
+                NegativeNumber()
+        );
+    }
+
+    Rule Object() {
+        return FirstOf(
+                FunctionCallChain(),
+                StringLiteral(),
+                FunctionInstantiation(),
+                NamedValue(),
+                ListInstantiation(),
+                MapInstantiation(),
                 Sequence("( ", Expression(), ") ")
         );
+    }
+
+    Rule Train() {
+        return ZeroOrMore(FirstOf(MethodCall(), FieldAccess()));
     }
 
     Rule ifExpression() {
@@ -49,23 +64,14 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence(Identifier(), push(namedValueNode(pop())));
     }
 
-    Rule FunctionCall() {
-        return FirstOf(ArgumentsFunctionCall(), ZeroArgumentFunctionCall());
-    }
-
     Rule MethodCall() {
         return Sequence(". ", Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.methodCall(pop(2), pop(1), getFunctionArguments())));
-    }
-
-    Rule ZeroArgumentMethodCall() {
-        return Sequence(". ", Identifier(), "( ", ") ",
-                push(nodeFactory.methodCall(pop(1), pop())));
+                push(nodeFactory.methodCall(pop(2), pop(1), pop())));
     }
 
     Rule FieldAccess() {
         return FirstOf(
-                Sequence("[ ", AdditiveExpression(), "] ", push(nodeFactory.mapAccess(pop(1), pop()))),
+                Sequence("[ ", Expression(), "] ", push(nodeFactory.mapAccess(pop(1), pop()))),
                 Sequence(". ", Identifier(), push(nodeFactory.fieldAccess(pop(1), pop())))
         );
     }
@@ -82,20 +88,37 @@ class OpelParser extends BaseParser<OpelNode> {
         return Sequence("\\", ANY);
     }
 
-    Rule ZeroArgumentFunctionCall() {
-        return Sequence(Identifier(), "( ", ") ",
-                push(nodeFactory.functionCallNode(pop())));
-
+    Rule FunctionCallChain() {
+        return Sequence(FunctionCall(), ArgsGroups(), push(nodeFactory.functionChain(pop(1), pop())));
     }
 
-    Rule ArgumentsFunctionCall() {
-        return Sequence(Identifier(), "( ", Args(), ") ",
-                push(nodeFactory.functionCallNode(pop(1), getFunctionArguments())));
+    Rule ArgsGroups() {
+        return Sequence(
+                push(nodeFactory.emptyArgsGroup()),
+                ZeroOrMore(ArgsGroup(), EMPTY)
+        );
+    }
+
+    Rule ArgsGroup() {
+        return Sequence("( ", Args(), ") ", push(nodeFactory.argsGroup(pop(1), pop())));
+    }
+
+    Rule FunctionCall() {
+        return FirstOf(
+                Sequence(Identifier(), "( ", Args(), ") ", push(nodeFactory.functionCallNode(pop(1), pop()))),
+                Sequence(FunctionInstantiation(), "( ", Args(), ") ", push(nodeFactory.anonymousFunctionCallNode(pop(1), pop()))),
+                Sequence("( ", Expression(), ") ", "( ", Args(), ") ", push(nodeFactory.functionChain(pop(1), nodeFactory.argsGroup(pop()))))
+        );
     }
 
     Rule Args() {
-        return Sequence(Expression(),
-                ZeroOrMore(", ", Expression(), push(nodeFactory.argumentsList(pop(), getFunctionArguments()))));
+        return Sequence(
+                push(nodeFactory.emptyArgumentsList()),
+                FirstOf(Sequence(Arg(), ZeroOrMore(", ", Arg())), EMPTY));
+    }
+
+    Rule Arg() {
+        return Sequence(Expression(), push(nodeFactory.argumentsList(pop(1), pop())));
     }
 
     Rule Identifier() {
@@ -132,10 +155,6 @@ class OpelParser extends BaseParser<OpelNode> {
                         )
                 )
         );
-    }
-
-    Rule Program() {
-        return Sequence(Declarations(), Expression(), Optional("; "), push(nodeFactory.program(pop(1), pop())));
     }
 
     Rule Declarations() {
@@ -230,6 +249,61 @@ class OpelParser extends BaseParser<OpelNode> {
         );
     }
 
+    Rule FunctionInstantiation() {
+        return Sequence(FunctionArgs(), "-> ", FunctionBody(), push(nodeFactory.functionInstantiation(pop(1), pop())));
+    }
+
+    Rule FunctionArgs() {
+        return FirstOf(
+                Sequence("( ", IdentifiersList(), ") "),
+                Sequence(push(nodeFactory.emptyIdentifiersList()), IdentifiersListItem())
+                );
+    }
+
+    Rule IdentifiersList() {
+        return Sequence(
+                push(nodeFactory.emptyIdentifiersList()),
+                FirstOf(Sequence(IdentifiersListItem(), ZeroOrMore(", ", IdentifiersListItem())), EMPTY));
+    }
+
+    Rule IdentifiersListItem() {
+        return Sequence(Identifier(), push(nodeFactory.identifiersList(pop(1), pop())));
+    }
+
+    Rule FunctionBody() {
+        return FirstOf(
+                Expression(),
+                Sequence("{ ", Body(), "} "));
+    }
+
+    Rule ListInstantiation() {
+        return Sequence(
+                "[ ",
+                Args(),
+                "] ",
+                push(nodeFactory.listInstantiation(pop())));
+    }
+
+    Rule MapInstantiation() {
+        return Sequence(
+            "{ ",
+            Pairs(),
+            "} ",
+            push(nodeFactory.mapInstantiationExpressionNode(pop()))
+        );
+    }
+
+    Rule Pairs() {
+        return Sequence(
+                push(nodeFactory.emptyPairsListNode()),
+                FirstOf(Sequence(Pair(), ZeroOrMore(", ", Pair())), ": ")
+        );
+    }
+
+    Rule Pair() {
+        return Sequence(Factor(), ": ", Expression(), push(nodeFactory.pairs(pop(2), pop(1), pop())));
+    }
+
     @SuppressSubnodes
     Rule Digits() {
         return OneOrMore(Digit());
@@ -264,15 +338,6 @@ class OpelParser extends BaseParser<OpelNode> {
             result.append(string.charAt(i));
         }
         return result.toString();
-    }
-
-    protected ArgumentsListExpressionNode getFunctionArguments() {
-
-        OpelNode node = pop();
-        if (node instanceof ArgumentsListExpressionNode) {
-            return (ArgumentsListExpressionNode) node;
-        }
-        return nodeFactory.argumentsList(node);
     }
 
     protected OpelNode binaryOperation(Operator operator) {

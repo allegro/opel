@@ -56,23 +56,6 @@ class OpelEngineIntegrationSpec extends Specification {
         input << ["123+'abc';;", ";123+'abc';"]
     }
 
-    def "should use left site as primary type for sum operator and throw exception when conversion failed"() {
-        def engine = create()
-                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-                    .build()
-        def variables = ['o': CompletableFuture.completedFuture(new Object())]
-
-        when:
-        engine.eval(input, EvalContext.fromMaps(variables, [:])).get()
-
-        then:
-        thrown Exception
-
-        where:
-        input << ["123+'abc'"]
-    }
-
     def 'should return parsing result with errors for multi line string'() {
         given:
         def engine = create().build()
@@ -141,23 +124,6 @@ xyz'"""
     }
 
     @Unroll
-    def "should firstly convert right argument when comparing objects in #input"() {
-        given:
-        def engine = create()
-                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-                    .build()
-
-        expect:
-        engine.eval(input).get() == expResult
-
-        where:
-        input          || expResult
-        " '55' <  7  " || true //compare strings
-        "  55  > '7' " || true //compare numbers
-    }
-
-    @Unroll
     def "should throw an exception when comparing invalid objects in #input expression"() {
         given:
         def variables = ['o': CompletableFuture.completedFuture(new Object())]
@@ -181,7 +147,7 @@ xyz'"""
     def 'should evaluate comparison with function: #input'() {
         given:
         def engine = create().build()
-        def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
+        def evalContext = EvalContextBuilder.create().withValues(functions()).build()
 
         expect:
         engine.parse(input).eval(evalContext).get() == expResult
@@ -255,47 +221,6 @@ xyz'"""
                   |  ^\n'''.stripMargin()
     }
 
-    @Unroll
-    def 'should call object methods for input #input'() {
-        given:
-        def engine = create()
-                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-                .build()
-
-        def variables = ["var": CompletableFuture.completedFuture(["a", "b", "c"]), "arg": CompletableFuture.completedFuture("a")]
-
-        def evalContext = EvalContextBuilder.create().withValues(variables).withFunction("fun", constFunctionReturning('Hello, World!')).build()
-
-        expect:
-        engine.parse(input).eval(evalContext).get() == expResult
-
-        where:
-        input                         || expResult
-        "fun().length()"              || 13
-        "fun().contains('ello')"      || true
-        "fun().charAt(1)"             || 'e'
-        "fun().substring(5).length()" || 8
-        "'Hello, World!'.length()"    || 13
-        "var.contains('a')"           || true
-        "var.contains(arg)"           || true
-    }
-
-    @Unroll
-    def 'should call methods on wrapped object for input #input'() {
-        def engine = create()
-                    .withImplicitConversion(String, RichString, { string -> new RichString(string) })
-                    .build()
-
-        expect:
-        engine.eval(input).get() == expResult
-
-        where:
-        input          || expResult
-        "'opel'.rev()" || "lepo"
-        "'abc'.rev()"  || "cba"
-    }
-
     public static class RichString {
         private final String delegate;
 
@@ -355,6 +280,7 @@ xyz'"""
         "if (1 == 1 && 2 == 3) 'a' else 'b'"                           || 'b'
         "if (1 == 1 && 2 == 3) 1 == 2 && 2 == 2 else 1 == 1 && 2 == 2" || true
         "if (false || false || false || true) 'a' else 'b'"            || 'a'
+        "(if (true) 'a' else 'b').length()"                            || 1
     }
 
     def 'should calculate only left value when condition result result is true'() {
@@ -363,10 +289,10 @@ xyz'"""
         def counter1 = 0;
         def counter2 = 0;
         def functions = [
-                'one'        : (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) },
-                'twoArgsFunc': (OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) }
+                'one'        : CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) }),
+                'twoArgsFunc': CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) })
         ];
-        def evalContext = EvalContextBuilder.create().withFunctions(functions).build()
+        def evalContext = EvalContextBuilder.create().withValues(functions).build()
 
         when:
         def result = engine.eval("if (true) one() else twoArgsFunc()", evalContext).get()

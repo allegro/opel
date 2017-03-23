@@ -6,24 +6,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class EvalContextBuilder {
-    private final Map<String, CompletableFuture<Object>> values = new HashMap<>();
-    private final Map<String, OpelAsyncFunction<?>> functions = new HashMap<>();
+    private final Map<String, CompletableFuture<?>> values = new HashMap<>();
     private Optional<EvalContext> externalEvalContext = Optional.empty();
 
-    static EvalContext fromMaps(Map<String, CompletableFuture<Object>> values, Map<String, OpelAsyncFunction<?>> functions) {
-        Map<String, CompletableFuture<Object>> copiedValues = new HashMap<>(values);
-        Map<String, OpelAsyncFunction<?>> copiedFunctions = new HashMap<>(functions);
-        return new EvalContext() {
-            @Override
-            public Optional<OpelAsyncFunction<?>> getFunction(String name) {
-                return Optional.ofNullable(copiedFunctions.get(name));
-            }
-
-            @Override
-            public Optional<CompletableFuture<?>> getValue(String name) {
-                return Optional.ofNullable(copiedValues.get(name));
-            }
-        };
+    static EvalContext fromMap(Map<String, CompletableFuture<?>> values) {
+        Map<String, CompletableFuture<?>> copiedValues = new HashMap<>(values);
+        return name -> Optional.ofNullable(copiedValues.get(name));
     }
 
     public static EvalContextBuilder create() {
@@ -40,7 +28,7 @@ public class EvalContextBuilder {
         return this;
     }
 
-    public EvalContextBuilder withValues(Map<String, CompletableFuture<Object>> values) {
+    public EvalContextBuilder withValues(Map<String, CompletableFuture<?>> values) {
         this.values.putAll(values);
         return this;
     }
@@ -50,13 +38,20 @@ public class EvalContextBuilder {
         return this;
     }
 
+    /**
+     * use withCompletedValue method
+     */
+    @Deprecated
     public EvalContextBuilder withFunction(String functionName, OpelAsyncFunction<?> function) {
-        functions.put(functionName, function);
-        return this;
+        return withCompletedValue(functionName, function);
     }
 
+    /**
+     * use withValues method
+     */
+    @Deprecated
     public EvalContextBuilder withFunctions(Map<String, OpelAsyncFunction<?>> functions) {
-        this.functions.putAll(functions);
+        functions.forEach(this::withCompletedValue);
         return this;
     }
 
@@ -64,28 +59,15 @@ public class EvalContextBuilder {
         return values.containsKey(valueName);
     }
 
-    public boolean hasFunction(String funName) {
-        return functions.containsKey(funName);
-    }
-
     public EvalContext build() {
-        return externalEvalContext.map(external -> mergeContexts(fromMaps(values, functions), external))
-                .orElseGet(() -> fromMaps(values, functions));
+        return externalEvalContext.map(external -> mergeContexts(fromMap(values), external))
+                .orElseGet(() -> fromMap(values));
     }
 
     static EvalContext mergeContexts(EvalContext primary, EvalContext secondary) {
-        return new EvalContext() {
-            @Override
-            public Optional<OpelAsyncFunction<?>> getFunction(String name) {
-                Optional<OpelAsyncFunction<?>> function = primary.getFunction(name);
-                return function.isPresent() ? function : secondary.getFunction(name);
-            }
-
-            @Override
-            public Optional<CompletableFuture<?>> getValue(String name) {
-                Optional<CompletableFuture<?>> value = primary.getValue(name);
-                return (value.isPresent()) ? value : secondary.getValue(name);
-            }
+        return name -> {
+            Optional<CompletableFuture<?>> value = primary.getValue(name);
+            return (value.isPresent()) ? value : secondary.getValue(name);
         };
     }
 }

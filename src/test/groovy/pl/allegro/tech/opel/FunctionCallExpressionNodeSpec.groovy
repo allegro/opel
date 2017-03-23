@@ -5,7 +5,7 @@ import spock.lang.Specification
 class FunctionCallExpressionNodeSpec extends Specification {
     def "should call function from context"() {
         given:
-        def arguments = new ArgumentsListExpressionNode(valueNode('y'), new ArgumentsListExpressionNode(valueNode('x')))
+        def arguments = new ArgumentsListExpressionNode([valueNode('x'), valueNode('y')])
         def functionCallNode = new FunctionCallExpressionNode('f1', arguments)
         def evalContext = EvalContextBuilder.create().withFunctions(functions()).build()
 

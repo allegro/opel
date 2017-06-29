@@ -5,6 +5,7 @@ enum Operator {
     MINUS,
     MULTIPLY,
     DIV,
+    REM,
     GT,
     GTE,
     LT,
@@ -24,6 +25,8 @@ enum Operator {
                 return new MultiplyOperatorExpressionNode(left, right, implicitConversion);
             case DIV:
                 return new DivideOperatorExpressionNode(left, right, implicitConversion);
+            case REM:
+                return new RemOperatorExpressionNode(left, right, implicitConversion);
             case GT:
                 return CompareOperatorExpressionNode.greaterThen(left, right, implicitConversion);
             case GTE:

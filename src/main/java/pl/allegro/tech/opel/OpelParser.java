@@ -151,7 +151,8 @@ class OpelParser extends BaseParser<OpelNode> {
                 ZeroOrMore(
                         FirstOf(
                                 Sequence("* ", Factor(), push(binaryOperation(Operator.MULTIPLY))),
-                                Sequence("/ ", Factor(), push(binaryOperation(Operator.DIV)))
+                                Sequence("/ ", Factor(), push(binaryOperation(Operator.DIV))),
+                                Sequence("% ", Factor(), push(binaryOperation(Operator.REM)))
                         )
                 )
         );

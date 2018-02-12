@@ -139,6 +139,36 @@ class OpelEngineMathIntegrationSpec extends Specification {
         "identity(if (false || (true && true)) true else false)" || true
     }
 
+    @Unroll
+    def '! should negate boolean expression #input'() {
+        given:
+        def engine = create()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
+        def evalContext = EvalContextBuilder.create()
+                .withCompletedValue('value', true)
+                .withCompletedValue('fun', constFunctionReturning(false))
+                .build()
+
+        expect:
+        engine.eval(input, evalContext).get() == expResult
+
+        where:
+        input             || expResult
+        "!true"           || false
+        "! true"          || false
+        "! !true"         || true
+        "!false"          || true
+        "!(true)"         || false
+        "!value"          || false
+        "!(value)"        || false
+        "!fun('')"        || true
+        "!(fun(''))"      || true
+        "!true || true"   || true
+        "!(true || true)" || false
+    }
+
     def 'AND operator should have higher priority than OR'() {
         given:
         def engine = create().build()

@@ -53,8 +53,6 @@ After checking some expression languages like:
 
 opel aims at very simple expressions. Certainly it won't be enough to make complicated scripts - but we want opel to stay that way.
 
-We discourage using *anonymous functions*, *code blocks*, *loops*, etc.
-
 ## What can opel do for you?
 
 opel supports:

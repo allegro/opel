@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException
 import static pl.allegro.tech.opel.OpelEngineBuilder.create
 import static pl.allegro.tech.opel.TestUtil.constFunctionReturning
 import static pl.allegro.tech.opel.TestUtil.functions
+import static pl.allegro.tech.opel.TestUtil.identityFunction
 
 class OpelEngineMathIntegrationSpec extends Specification {
     @Unroll
@@ -149,24 +150,31 @@ class OpelEngineMathIntegrationSpec extends Specification {
         def evalContext = EvalContextBuilder.create()
                 .withCompletedValue('value', true)
                 .withCompletedValue('fun', constFunctionReturning(false))
+                .withCompletedValue('identity', identityFunction())
                 .build()
 
         expect:
         engine.eval(input, evalContext).get() == expResult
 
         where:
-        input             || expResult
-        "!true"           || false
-        "! true"          || false
-        "! !true"         || true
-        "!false"          || true
-        "!(true)"         || false
-        "!value"          || false
-        "!(value)"        || false
-        "!fun('')"        || true
-        "!(fun(''))"      || true
-        "!true || true"   || true
-        "!(true || true)" || false
+        input                || expResult
+        "!true"              || false
+        "! true"             || false
+        "! !true"            || true
+        "!!true"             || true
+        "!false"             || true
+        "!(true)"            || false
+        "!value"             || false
+        "!(value)"           || false
+        "!fun('')"           || true
+        "!(fun(''))"         || true
+        "!true || true"      || true
+        "!(true || true)"    || false
+        "!(true || true)"    || false
+        "!(false || !false)" || false
+        "identity(!true)"    || false
+        "!identity(!true)"   || true
+        "true && !false"     || true
     }
 
     def 'AND operator should have higher priority than OR'() {

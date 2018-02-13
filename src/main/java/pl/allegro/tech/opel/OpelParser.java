@@ -147,13 +147,20 @@ class OpelParser extends BaseParser<OpelNode> {
 
     Rule MultiplyExpression() {
         return Sequence(
-                Factor(),
+                LogicalNegation(),
                 ZeroOrMore(
                         FirstOf(
-                                Sequence("* ", Factor(), push(binaryOperation(Operator.MULTIPLY))),
-                                Sequence("/ ", Factor(), push(binaryOperation(Operator.DIV)))
+                                Sequence("* ", LogicalNegation(), push(binaryOperation(Operator.MULTIPLY))),
+                                Sequence("/ ", LogicalNegation(), push(binaryOperation(Operator.DIV)))
                         )
                 )
+        );
+    }
+
+    Rule LogicalNegation() {
+        return FirstOf(
+                Sequence("! ", LogicalNegation(), push(nodeFactory.logicalNegationOperatorExpressionNode(pop()))),
+                Factor()
         );
     }
 

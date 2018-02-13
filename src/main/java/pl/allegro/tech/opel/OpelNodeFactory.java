@@ -130,4 +130,8 @@ class OpelNodeFactory {
     public OpelNode mapInstantiationExpressionNode(OpelNode pairs) {
         return new MapInstantiationExpressionNode((PairsListNode)pairs);
     }
+
+    public OpelNode logicalNegationOperatorExpressionNode(OpelNode value) {
+        return new LogicalNegationOperatorExpressionNode(value, implicitConversion);
+    }
 }

@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 public class OpelEngine {
     private final ThreadLocal<OpelParser> parser;
     private final ImplicitConversion implicitConversion;
-
-    private EvalContext embeddedEvalContext = EvalContext.empty();
+    private final EvalContext embeddedEvalContext;
 
     OpelEngine(MethodExecutionFilter methodExecutionFilter, ImplicitConversion implicitConversion, EvalContext embeddedEvalContext) {
         this.embeddedEvalContext = embeddedEvalContext;

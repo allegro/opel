@@ -48,9 +48,15 @@ class ImplicitConversion {
         }
         Class<?> givenType = object.getClass();
         return implicitConversionUnits.stream()
-                .filter(conversionUnit -> conversionUnit.isApplicable(givenType, expectedType))
-                .findFirst()
-                .isPresent();
+                .anyMatch(conversionUnit -> conversionUnit.isApplicable(givenType, expectedType));
+    }
+
+    public <R, T> boolean hasConverter(Class<T> givenType, Class<R> expectedType) {
+        if (ClassUtils.isAssignable(givenType, expectedType)) {
+            return true;
+        }
+        return implicitConversionUnits.stream()
+                .anyMatch(conversionUnit -> conversionUnit.isApplicable(givenType, expectedType));
     }
 
     public Stream<Object> getAllPossibleConversions(Object object) {

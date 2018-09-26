@@ -9,7 +9,8 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 public class MethodCallExpressionNode implements OpelNode {
     private final OpelNode subject;
@@ -51,7 +52,7 @@ public class MethodCallExpressionNode implements OpelNode {
                         .map(ags -> ags.getListOfValues(context))
                         .orElse(Collections.emptyList())
                         .stream()
-                        .map(this::javaGenericsFix).collect(Collectors.toList())
+                        .map(this::javaGenericsFix).collect(toList())
         ).thenCombine(subject.getValue(context), (args, sbj) -> methodCall(sbj, identifier, args));
     }
 
@@ -63,7 +64,7 @@ public class MethodCallExpressionNode implements OpelNode {
                     .filter(it -> it.getRight().isPresent())
                     .findFirst()
                     .map(it -> ImmutablePair.of(it.left, it.right.get()))
-                    .orElseThrow(() -> new RuntimeException("Can't find method '" + methodName + "' for class '" + subject.getClass().getSimpleName() + "' with arguments: " + Arrays.stream(argsTypes).map(Class::getSimpleName).collect(Collectors.joining(", "))));
+                    .orElseThrow(() -> new RuntimeException("Can't find method '" + methodName + "' for class '" + subject.getClass().getSimpleName() + "' with arguments: " + Arrays.stream(argsTypes).map(Class::getSimpleName).collect(joining(", "))));
 
             return chosenMethod.right.invoke(chosenMethod.left, convertArgs(args, chosenMethod.right));
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -72,11 +73,15 @@ public class MethodCallExpressionNode implements OpelNode {
     }
 
     private Optional<Method> findMatchingMethod(Object subject, String methodName, List<?> args) {
-        Method matchingMethod = methodsCache.computeIfAbsent(new MethodCacheKey(subject.getClass(), args),
+        List<Class> argsTypes = args.stream()
+                .map(arg -> arg == null ? null : arg.getClass())
+                .collect(toList());
+
+        Method matchingMethod = methodsCache.computeIfAbsent(new MethodCacheKey(subject.getClass(), argsTypes),
                 cacheKey -> Arrays.stream(subject.getClass().getMethods())
                         .filter(m -> m.getName().equals(methodName))
                         .filter(m -> methodExecutionFilter.filter(subject, m))
-                        .filter(m -> areArgsMatchForMethod(m, args))
+                        .filter(m -> areArgsMatchForMethod(m, argsTypes))
                         .findFirst()
                         .orElse(null));
 
@@ -94,19 +99,18 @@ public class MethodCallExpressionNode implements OpelNode {
         return convertedArgs.toArray(new Object[convertedArgs.size()]);
     }
 
-    private boolean areArgsMatchForMethod(Method method, List<?> args) {
+    private boolean areArgsMatchForMethod(Method method, List<Class> args) {
         Class[] expectedArgumentsTypes = method.getParameterTypes();
         if (expectedArgumentsTypes.length != args.size()) {
             return false;
         }
         for (int i = 0; i < expectedArgumentsTypes.length; i++) {
             Class<?> expectedType = expectedArgumentsTypes[i];
-            Object arg = args.get(i);
-            if (arg == null) {
+            Class<?> givenType = args.get(i);
+            if (givenType == null) {
                 continue;
             }
-            Class<?> givenType = arg.getClass();
-            if (!ClassUtils.isAssignable(givenType, expectedType) && !implicitConversion.hasConverter(arg, expectedType)) {
+            if (!ClassUtils.isAssignable(givenType, expectedType) && !implicitConversion.hasConverter(givenType, expectedType)) {
                 return false;
             }
         }
@@ -119,11 +123,11 @@ public class MethodCallExpressionNode implements OpelNode {
 
     private class MethodCacheKey {
         private final Class c;
-        private final List<?> args;
+        private final List<Class<?>> args;
 
         MethodCacheKey(Class c, List<?> args) {
             this.c = c;
-            this.args = args;
+            this.args = args.stream().map(arg -> arg == null ? null : arg.getClass()).collect(toList());
         }
 
         @Override

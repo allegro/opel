@@ -80,3 +80,13 @@ dependencies {
     compile 'pl.allegro.tech:opel:1.0.1'
 }
 ```
+
+## Running demo app
+
+Run:
+
+```
+./gradlew :demo-webapp:run
+```
+
+and visit: [localhost:4567](http://localhost:4567)

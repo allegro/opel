@@ -4,7 +4,9 @@ import pl.allegro.tech.opel.ExpressionValidationResult;
 import pl.allegro.tech.opel.OpelEngine;
 import pl.allegro.tech.opel.OpelEngineBuilder;
 import spark.ModelAndView;
+import spark.Spark;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +16,7 @@ import static spark.Spark.staticFileLocation;
 
 public class Main {
 
-    private static OpelEngine opelEngine = OpelEngineBuilder.create().build();
+    private static OpelEngine opelEngine = registerSimpleConversions(OpelEngineBuilder.create()).build();
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     interface ModelVariables {
@@ -24,7 +26,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
+        determineAndSetPort();
         staticFileLocation("/static");
 
         get("/", (request, response) -> {
@@ -60,4 +62,18 @@ public class Main {
     private static String sanitizeExpression(String expression) {
         return expression.replaceAll("\r", "");
     }
+
+    private static void determineAndSetPort() {
+        Optional.ofNullable(new ProcessBuilder().environment().get("PORT"))
+                .ifPresent(port -> Spark.port(Integer.parseInt(port)));
+    }
+
+    private static OpelEngineBuilder registerSimpleConversions(OpelEngineBuilder opelEngineBuilder) {
+        opelEngineBuilder.withImplicitConversion(String.class, BigDecimal.class, BigDecimal::new);
+        opelEngineBuilder.withImplicitConversion(String.class, Integer.class, Integer::valueOf);
+        opelEngineBuilder.withImplicitConversion(Integer.class, String.class, Object::toString);
+        opelEngineBuilder.withImplicitConversion(BigDecimal.class, String.class, BigDecimal::toPlainString);
+        return opelEngineBuilder;
+    }
+
 }

@@ -28,6 +28,10 @@ class OpelEngineIntegrationSpec extends Specification {
         "'abc'"             || "abc"
         "'łąć'"             || "łąć"
         "'abc'+'xyz'"       || 'abcxyz'
+        "'\\'abc'"          || "'abc"
+        "'abc\\''"          || "abc'"
+        "'abc\\'xyz'"       || "abc'xyz"
+        "''"                || ""
     }
 
     @Unroll

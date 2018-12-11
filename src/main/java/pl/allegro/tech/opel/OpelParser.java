@@ -81,7 +81,10 @@ class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule StringContent() {
-        return Sequence(ZeroOrMore(Sequence(TestNot(AnyOf("\r\n'")), ZeroOrMore(escapedChar()), ANY)), push(nodeFactory.literalNode(escapeString(matchOrDefault("")))));
+        return Sequence(
+                ZeroOrMore(Sequence(TestNot(AnyOf("\r\n'")), FirstOf(escapedChar(), ANY))),
+                push(nodeFactory.literalNode(escapeString(matchOrDefault(""))))
+        );
     }
 
     Rule escapedChar() {

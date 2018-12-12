@@ -126,6 +126,6 @@ class CompareOperatorExpressionNodeSpec extends Specification {
     private static class Foo {}
 
     private static LiteralExpressionNode completedVal(Object o) {
-        new LiteralExpressionNode(o);
+        new LiteralExpressionNode(o)
     }
 }

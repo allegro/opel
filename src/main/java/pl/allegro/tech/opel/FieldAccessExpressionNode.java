@@ -1,15 +1,9 @@
 package pl.allegro.tech.opel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 class FieldAccessExpressionNode implements OpelNode {
-    private final static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private final OpelNode subject;
     private final OpelNode fieldName;
 
@@ -26,7 +20,6 @@ class FieldAccessExpressionNode implements OpelNode {
     private CompletableFuture<?> extractValueFromMap(CompletableFuture<?> obj, CompletableFuture<?> key) {
         return obj.thenCombine(key, (it, k) -> {
             if (it == null) {
-                logger.info("Can't extract value for key '" + k + "' from null");
                 return null;
             }
             if (it instanceof Map) {

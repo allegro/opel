@@ -6,7 +6,7 @@ jdk:
   - openjdk12
 
 script:
-  - "./gradlew check"
+  - "./gradlew build"
   - "./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=opel -Dsonar.organization=allegro -Dsonar.host.url=https://sonarcloud.io"
 
 after_success:

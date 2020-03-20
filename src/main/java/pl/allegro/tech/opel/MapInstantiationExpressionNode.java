@@ -1,6 +1,7 @@
 package pl.allegro.tech.opel;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -18,7 +19,8 @@ public class MapInstantiationExpressionNode implements OpelNode {
                 .map(pair -> pair.getKey().getValue(context)
                         .thenCombine(pair.getValue().getValue(context), this::entry))
                 .collect(Collectors.toList()))
-        .thenApply(list -> list.stream().collect(Collectors.toMap(AbstractMap.SimpleImmutableEntry::getKey, AbstractMap.SimpleImmutableEntry::getValue)));
+                .thenApply(list -> list.stream()
+                        .collect(HashMap::new, (hashMap, entry) -> hashMap.put(entry.getKey(), entry.getValue()), HashMap::putAll));
     }
 
     private AbstractMap.SimpleImmutableEntry entry(Object key, Object value) {

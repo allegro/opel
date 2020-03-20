@@ -17,11 +17,13 @@ class OpelEngineMapIntegrationSpec extends Specification {
         engine.eval(input).get() == new HashMap(expResult)
 
         where:
-        input                || expResult
-        "{:}"                || [:]
-        "{'x':2}"            || [x: 2]
-        "({'x': 2 })"        || [x: 2]
-        "{'x': 2, 'y':3 }"   || [x: 2, y: 3]
+        input                 || expResult
+        "{:}"                 || [:]
+        "{'x':2}"             || [x: 2]
+        "({'x': 2 })"         || [x: 2]
+        "{'x': 2, 'y':3 }"    || [x: 2, y: 3]
+        "{'x': 2, 'y':null }" || [x: 2, y: null]
+        "{'x': 2, 'null':2 }" || [x: 2, null: 2]
     }
 
     @Unroll
@@ -36,6 +38,7 @@ class OpelEngineMapIntegrationSpec extends Specification {
         input                           || values                                          || expResult
         "{x: (6+7), 'y':3 }"            || [x: CompletableFuture.completedFuture(2.0)]     || [(2.0): 13, y: 3]
         "{x: 6+7, 'y':3 }"              || [x: CompletableFuture.completedFuture(2.0)]     || [(2.0): 13, y: 3]
+        "{x: 6+7, 'y':3 }"              || [x: CompletableFuture.completedFuture(null)]    || [(null): 13, y: 3]
     }
 
     @Unroll

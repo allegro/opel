@@ -52,10 +52,6 @@ test {
     }
 }
 
-wrapper() {
-    gradleVersion = '5.0'
-}
-
 nexusStaging {
     packageGroup = 'pl.allegro'
     numberOfRetries = 15
@@ -91,9 +87,16 @@ modifyPom {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports/jacoco")
+}
+
 jacocoTestReport {
     reports {
         xml.enabled = true
+        xml.destination = file("$buildDir/reports/jacoco/report.xml")
+        csv.enabled = false
         html.enabled = false
     }
 }

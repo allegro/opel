@@ -1,15 +1,15 @@
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'
-        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.7'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
+        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.5.0'
     }
 }
 
 plugins {
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'pl.allegro.tech.build.axion-release' version '1.10.0'
-    id "me.champeau.gradle.jmh" version "0.4.7"
+    id 'pl.allegro.tech.build.axion-release' version '1.11.0'
+    id "me.champeau.gradle.jmh" version "0.5.0"
     id "org.sonarqube" version "2.8"
 }
 
@@ -33,13 +33,13 @@ project.version = scmVersion.version
 project.group = 'pl.allegro.tech'
 
 dependencies {
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
-    compile group: 'org.parboiled', name: 'parboiled-java', version: '1.2.0'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.parboiled', name: 'parboiled-java', version: '1.3.1'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
 
-    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.2-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.3-groovy-2.4'
 
-    jmh group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+    jmh group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
 }
 
 jmh {

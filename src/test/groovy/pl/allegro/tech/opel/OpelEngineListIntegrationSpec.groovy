@@ -21,6 +21,7 @@ class OpelEngineListIntegrationSpec extends Specification {
         input                            || expResult
         "[]"                             || []
         "([])"                           || []
+        "[null]"                         || [null]
         "['a']"                          || ['a']
         "['a', 'b']"                     || ['a', 'b']
         "['a', 'b', 'c']"                || ['a', 'b', 'c']

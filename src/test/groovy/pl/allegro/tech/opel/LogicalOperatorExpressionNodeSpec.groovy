@@ -65,7 +65,7 @@ class LogicalOperatorExpressionNodeSpec extends Specification {
         thrown ExecutionException
     }
 
-    def 'should treat nulls as false'() {
+    def 'should treat nulls as false using or'() {
         given:
         def conversion = new ImplicitConversion()
         def expressionNode = LogicalOperatorExpressionNode.orOperator(valueNode(left), valueNode(right), conversion)
@@ -77,6 +77,21 @@ class LogicalOperatorExpressionNodeSpec extends Specification {
         left | right || result
         null | true  || true
         true | null  || true
+        null | null  || false
+    }
+
+    def 'should treat nulls as false using and'() {
+        given:
+        def conversion = new ImplicitConversion()
+        def expressionNode = LogicalOperatorExpressionNode.andOperator(valueNode(left), valueNode(right), conversion)
+
+        expect:
+        expressionNode.getValue().get() == result
+
+        where:
+        left | right || result
+        null | true  || false
+        true | null  || false
         null | null  || false
     }
 

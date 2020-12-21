@@ -28,6 +28,9 @@ class ImplicitConversion {
     }
 
     public <R> R convert(Object object, Class<R> expectedType) {
+        if (object == null && expectedType.equals(Boolean.class)) {
+            return (R) Boolean.FALSE;
+        }
         if (object == null || ClassUtils.isAssignable(object.getClass(), expectedType)) {
             return (R) object;
         }
@@ -48,9 +51,7 @@ class ImplicitConversion {
         }
         Class<?> givenType = object.getClass();
         return implicitConversionUnits.stream()
-                .filter(conversionUnit -> conversionUnit.isApplicable(givenType, expectedType))
-                .findFirst()
-                .isPresent();
+                .anyMatch(conversionUnit -> conversionUnit.isApplicable(givenType, expectedType));
     }
 
     public Stream<Object> getAllPossibleConversions(Object object) {

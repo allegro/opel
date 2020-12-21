@@ -40,9 +40,8 @@ class LogicalOperatorExpressionNode extends BinaryOperationExpressionNode {
         try {
             return wrappedBody.get();
         } catch (Exception e) {
-            throw new OpelException("Error on evaluating left side of logical expression. " +
-                    "operator: " + logicalOperator + ", " +
-                    "left: " + left + ", class: " + left.getClass(), e);
+            String msg = String.format("Error on evaluating left side of logical expression. operator: '%s', left: '%s', class: '%s'", logicalOperator, left, left.getClass());
+            throw new OpelException(msg, e);
         }
     }
 
@@ -50,10 +49,8 @@ class LogicalOperatorExpressionNode extends BinaryOperationExpressionNode {
         try {
             return wrappedBody.get();
         } catch (Exception e) {
-            throw new OpelException("Error on evaluating logical expression. " +
-                    "operator: " + logicalOperator + ", " +
-                    "left: " + left + ", class: " + left.getClass() +
-                    "right: " + right + ", class: " + right.getClass(), e);
+            String msg = String.format("Error on evaluating logical expression. operator: '%s', left: '%s', class: '%s' right: '%s', class: '%s'", logicalOperator, left, left.getClass(), right, right.getClass());
+            throw new OpelException(msg, e);
         }
     }
 }

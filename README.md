@@ -1,6 +1,5 @@
-[![Travis (.org)](https://img.shields.io/travis/allegro/opel.svg?style=flat)](https://travis-ci.org/allegro/opel)
+[![Build](https://github.com/allegro/opel/actions/workflows/ci.yml/badge.svg)](https://github.com/allegro/opel/actions/workflows/ci.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/allegro/opel.svg?style=flat)](https://codecov.io/gh/allegro/opel)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=opel&metric=alert_status)](https://sonarcloud.io/dashboard?id=opel)
 [![GitHub Release Date](https://img.shields.io/github/release-date/allegro/opel.svg?style=flat)](https://github.com/allegro/opel/releases)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 

@@ -2,11 +2,8 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
     paths-ignore:
       - 'README.md'
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
@@ -14,40 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '8', '11' ]
-        
-    steps:
-      
-      - uses: actions/checkout@v2
-      
-      - uses: gradle/wrapper-validation-action@v1
-      
-      - name: Setup Java ${{ matrix.Java }}
-        uses: actions/setup-java@v1
-        with:
-          distribution: adopt
-          java-version: ${{ matrix.java }}
+        java: [ '8', '11', '17' ]
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v2
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup Java ${{ matrix.Java }}
+        uses: actions/setup-java@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
       - name: Test with Gradle
-        run: ./gradlew --no-daemon --continue build
-        
+        run: ./gradlew --no-daemon build
+
       - name: Jacoco
         run: ./gradlew jacocoTestReport
-     
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
-  
-      - name: Cleanup Gradle Cache
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties

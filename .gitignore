@@ -5,6 +5,3 @@
 build
 out
 classes
-
-# mac os x
-.DS_Store

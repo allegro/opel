@@ -7,6 +7,7 @@ plugins {
     id("pl.allegro.tech.build.axion-release") version "1.13.3"
     id("com.adarshr.test-logger") version "3.0.0"
     id("me.champeau.gradle.jmh") version "0.5.3"
+    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 repositories {
@@ -95,13 +96,18 @@ publishing {
     }
     repositories {
         maven {
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_PASSWORD")
-            }
             val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(System.getenv("SONATYPE_USERNAME"))
+            password.set(System.getenv("SONATYPE_PASSWORD"))
         }
     }
 }

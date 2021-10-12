@@ -80,6 +80,6 @@ Basically, all you have to do is to add a compile dependency:
 
 ```
 dependencies {
-    compile 'pl.allegro.tech:opel:1.7.0'
+    compile 'pl.allegro.tech:opel:1.1.8'
 }
 ```

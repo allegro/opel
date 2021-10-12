@@ -58,7 +58,7 @@ publishing {
     publications {
         create<MavenPublication>("sonatype") {
             artifactId = "opel"
-            from(components["java"])
+            artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
             versionMapping {

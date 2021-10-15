@@ -75,6 +75,8 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         "'chcę kupić '+ds(4).items[0].name+' bułek'" || 'chcę kupić 666 bułek'
         "'abc'+5+5"                                  || "abc55"
         "'abc'+(5+5)"                                || "abc10"
+        "ds(44).someField.anotherOne"                || null
+        "ds(44).someField[0].anotherOne"             || null
     }
 
     def '0-arg function should receive empty list of arguments'() {
@@ -206,9 +208,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 204
-        '3 + myFunc()'                      | 106
+        expression     | expected
+        '2 + myVar'    | 204
+        '3 + myFunc()' | 106
     }
 
     @Unroll
@@ -226,9 +228,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 204
-        '3 + myFunc()'                      | 106
+        expression     | expected
+        '2 + myVar'    | 204
+        '3 + myFunc()' | 106
     }
 
     @Unroll
@@ -251,9 +253,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 2002
-        '3 + myFunc()'                      | 1003
+        expression     | expected
+        '2 + myVar'    | 2002
+        '3 + myFunc()' | 1003
     }
 
     @Unroll
@@ -271,9 +273,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 204
-        '3 + myFunc()'                      | 106
+        expression     | expected
+        '2 + myVar'    | 204
+        '3 + myFunc()' | 106
     }
 
     @Unroll
@@ -291,9 +293,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 204
-        '3 + myFunc()'                      | 106
+        expression     | expected
+        '2 + myVar'    | 204
+        '3 + myFunc()' | 106
     }
 
     @Unroll
@@ -316,9 +318,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         value.get() == expected
 
         where:
-        expression                          | expected
-        '2 + myVar'                         | 2002
-        '3 + myFunc()'                      | 1003
+        expression     | expected
+        '2 + myVar'    | 2002
+        '3 + myFunc()' | 1003
     }
 
     @Unroll
@@ -337,9 +339,9 @@ class OpelEngineContextFunctionsAndVariablesIntegrationSpec extends Specificatio
         engine.eval(expression, context).get() == expectResult
 
         where:
-        expression                   | expectResult
-        'true'                       | true
-        'false'                      | false
-        'null'                       | null
+        expression | expectResult
+        'true'     | true
+        'false'    | false
+        'null'     | null
     }
 }

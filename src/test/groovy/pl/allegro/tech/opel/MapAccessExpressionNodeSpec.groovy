@@ -25,6 +25,28 @@ class MapAccessExpressionNodeSpec extends Specification {
         result == 'b'
     }
 
+    def "should handle null value"() {
+        given:
+        def node = new MapAccessExpressionNode(valueNode(null), new IdentifierExpressionNode('x'))
+
+        when:
+        def result = node.getValue().get()
+
+        then:
+        result == null
+    }
+
+    def "should handle null field"() {
+        given:
+        def node = new MapAccessExpressionNode(valueNode(['x': 'abc']), valueNode(null))
+
+        when:
+        def result = node.getValue().get()
+
+        then:
+        result == null
+    }
+
     private static LiteralExpressionNode valueNode(Object o) {
         new LiteralExpressionNode(o);
     }

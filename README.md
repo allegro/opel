@@ -68,9 +68,12 @@ opel supports:
 - object method calls (i.e. `'Hello, World!'.length()`)
 - if expressions (i.e. `if (2 > 3) 'a' else 'b'`)
 - defining local constant values (i.e. `val x = 2+2*2; x * x`)
-- registrable implicit conversions (i.e. `2 + '2'` or `'Hello, World!'.myMethod()`)
-- registrable functions (i.e. `myFunction('Hello, World!')`)
+- defining maps (i.e. `val x = {'a': 'b'}; x.a`)
+- defining lists (i.e. `val x = ['a', 'b']; x[0]`)
+- defining the functions and lambda expression (i.e. `val x = a -> a * a; val y = b -> b + b; x(y(r))`)
 - registrable constant values (i.e. `'Hello, ' + WORLD_VALUE`)
+- registrable functions (i.e. `myFunction('Hello, World!')`)
+- registrable implicit conversions (i.e. `2 + '2'` or `'Hello, World!'.myMethod()`)
 
 More can be found in [documentation](https://github.com/allegro/opel/wiki).
 
@@ -83,3 +86,85 @@ dependencies {
     compile 'pl.allegro.tech:opel:1.1.8'
 }
 ```
+
+## Java usage examples
+
+### Evaluate simple expression
+
+Create an instance of `OpelEngine` and evaluate the expression:
+
+```
+OpelEngine engine = OpelEngineBuilder.create()
+        .build();
+
+engine.eval("2 + 3")
+        .whenComplete((result, error) -> System.out.println(result));
+```
+
+### Evaluate expression with global variable
+
+Create an instance of `OpelEngine` with global a variable and evaluate the expression:
+
+```
+OpelEngine engine = OpelEngineBuilder.create()
+        .withCompletedValue("PI", 3.14)
+        .build();
+
+engine.eval("PI * 2")
+        .whenComplete((result, error) -> System.out.println(result));
+```
+
+Notice that in the opel, all variables are final.
+
+### Evaluate expression with context variable
+
+The engine is a heavy object and should be reused to evaluate different expressions.
+To achieve this, variables can be provided in the context:
+
+```
+OpelEngine engine = OpelEngineBuilder.create()
+        .withCompletedValue("PI", 3.14)
+        .build();
+
+String expression = "PI * r * r";
+
+EvalContext context = EvalContextBuilder.create()
+        .withCompletedValue("r", 3)
+        .build();
+
+engine.eval(expression, context)
+        .whenComplete((result, error) -> System.out.println(result));
+```
+
+In the engine, you can configure general language for the application. 
+In context, you can provide, for example, request context like authorized username.
+
+### Evaluate expression with engine/context function
+
+Functions in the opel are implemented by `OpelAsyncFunction` interface and can be added as regular variable:
+
+```
+OpelAsyncFunction<Object> function = new OpelAsyncFunction<Object>() {
+            @Override
+            CompletableFuture<Object> apply(List<CompletableFuture<?>> args) {
+                Object result = // a call to an external service, to a database or other logic
+                return result;
+            }
+        };
+
+OpelEngine engine = OpelEngineBuilder.create()
+        .withCompletedValue("myFun", function)
+        .build();
+
+String expression = "myFun(a) * myFun(b)";
+
+EvalContext context = EvalContextBuilder.create()
+        .withCompletedValue("a", "john")
+        .withCompletedValue("b", "jenny")
+        .build();
+
+engine.eval(expression, context)
+        .whenComplete((result, error) -> System.out.println(result));
+```
+
+In the same way, we add function to `OpelEngine` by `withCompletedValue` method, it can be added to `EvalContext`.

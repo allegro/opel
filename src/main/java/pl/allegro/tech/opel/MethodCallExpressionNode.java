@@ -71,6 +71,9 @@ public class MethodCallExpressionNode implements OpelNode {
     }
 
     private Optional<Method> findMatchingMethod(Object subject, String methodName, List<?> args) {
+        if (subject == null) {
+            throw new RuntimeException("Can't call '" + methodName + "' on null");
+        }
         return Arrays.stream(subject.getClass().getMethods())
                 .filter(method -> methodExecutionFilter.filter(subject, method))
                 .filter(method -> method.getName().equals(methodName))

@@ -114,7 +114,7 @@ engine.eval("PI * 2")
         .whenComplete((result, error) -> System.out.println(result));
 ```
 
-Notice that in the opel, all variables are final.
+Notice that in opel, all variables are final.
 
 ### Evaluate expression with context variable
 
@@ -141,7 +141,7 @@ In context, you can provide, for example, request context like authorized userna
 
 ### Evaluate expression with engine/context function
 
-Functions in the opel are implemented by `OpelAsyncFunction` interface and can be added as regular variable:
+Functions in opel are implemented by `OpelAsyncFunction` interface and can be added as regular variable:
 
 ```
 OpelAsyncFunction<Object> function = new OpelAsyncFunction<Object>() {

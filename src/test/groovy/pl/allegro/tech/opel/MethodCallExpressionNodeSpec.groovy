@@ -66,6 +66,18 @@ class MethodCallExpressionNodeSpec extends Specification {
         thrown ExecutionException
     }
 
+    def "should throw when calling method on null receiver"() {
+        given:
+        def methodCallNode = new MethodCallExpressionNode(valueNode(null), 'method', Optional.empty(), new ImplicitConversion(), MethodExecutionFilters.ALLOW_ALL)
+
+        when:
+        methodCallNode.getValue().get()
+
+        then:
+        ExecutionException ex = thrown()
+        ex.cause.message == 'Can\'t call \'method\' on null'
+    }
+
     class Foo {
         def method(a, b) {
             a + b

@@ -4,7 +4,7 @@ plugins {
     jacoco
     `maven-publish`
     signing
-    id("pl.allegro.tech.build.axion-release") version "1.13.3"
+    id("pl.allegro.tech.build.axion-release") version "1.13.6"
     id("com.adarshr.test-logger") version "3.0.0"
     id("me.champeau.gradle.jmh") version "0.5.3"
     id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
@@ -18,13 +18,14 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.parboiled:parboiled-java:1.3.1")
+    implementation(files("/Users/bartosz.galek/Work/opel/lib/parboiled-java-1.4.0.jar"))
     implementation("org.slf4j:slf4j-api:1.7.32")
 
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")

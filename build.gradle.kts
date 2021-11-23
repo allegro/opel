@@ -60,8 +60,6 @@ publishing {
         create<MavenPublication>("sonatype") {
             artifactId = "opel"
             from(components.findByName("java"))
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["javadocJar"])
             versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")

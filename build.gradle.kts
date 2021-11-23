@@ -59,6 +59,7 @@ publishing {
     publications {
         create<MavenPublication>("sonatype") {
             artifactId = "opel"
+            from(components.findByName("java"))
             artifact(tasks["jar"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])

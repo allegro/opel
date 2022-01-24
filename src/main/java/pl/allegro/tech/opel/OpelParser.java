@@ -369,17 +369,4 @@ public class OpelParser extends BaseParser<OpelNode> {
         }
         return nodeFactory.namedValueNode(valueIdentifierNode);
     }
-
-    // JDK16+ required fix for parboiled bug
-    public static Class<?> findLoadedClass(String className) throws IllegalAccessException {
-        try {
-            return MethodHandles.lookup().findClass(className);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    public static Class<?> loadClass(byte[] code) throws IllegalAccessException {
-        return MethodHandles.lookup().defineClass(code);
-    }
 }

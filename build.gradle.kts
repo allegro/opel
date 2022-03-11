@@ -24,7 +24,7 @@ java {
 
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.parboiled:parboiled-java:1.4.0")
+    implementation("org.parboiled:parboiled-java:1.4.1")
     implementation("org.slf4j:slf4j-api:1.7.32")
 
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")

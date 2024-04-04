@@ -220,21 +220,20 @@ xyz'"""
 
         then:
         validationResult.errorMessage ==
-                '''Invalid input ',', expected ' ', '\\t', '\\n', fromStringLiteral or EOI (line 1, pos 3):
+                '''Invalid input ',', expected ' ', '\\t', '\\n', '*', '/', '+', '-', '>', '>=', '<', '<=', '==', '!=', '&&', '||', ';' or EOI (line 1, pos 3):
                   |1 ,= 5
                   |  ^\n'''.stripMargin()
     }
 
-    public static class RichString {
-        private final String delegate;
+    def 'validation should return proper message for if expression with missing else'() {
+        when:
+        ExpressionValidationResult validationResult = create().build().validate("if (2 == 2) 'elo'")
 
-        RichString(String delegate) {
-            this.delegate = delegate
-        }
-
-        String rev() {
-            return delegate.reverse()
-        }
+        then:
+        validationResult.errorMessage ==
+                '''Unexpected end of input, expected WhiteSpace, Train, '*', '/', '+', '-', '>', '>=', '<', '<=', '==', '!=', '&&', '||' or 'else' (line 1, pos 18):
+                  |if (2 == 2) 'elo'
+                  |                 ^\n'''.stripMargin()
     }
 
     @Unroll

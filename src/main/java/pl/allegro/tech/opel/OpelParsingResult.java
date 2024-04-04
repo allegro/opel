@@ -30,7 +30,7 @@ public class OpelParsingResult {
     private CompletableFuture<?> evalWithFinalContext(EvalContext context) {
         return getParsedExpression()
                 .map(node -> node.getValue(context))
-                .orElseThrow(() -> new OpelException("Expression '" + expression + "' contain's syntax error"));
+                .orElseThrow(() -> new OpelException("Expression '" + expression + "' contain's syntax error " + ErrorUtils.printParseErrors(parsingResult)));
     }
 
     private Optional<OpelNode> getParsedExpression() {

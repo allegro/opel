@@ -3,9 +3,9 @@ package pl.allegro.tech.opel;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.DontLabel;
 import org.parboiled.annotations.SuppressSubnodes;
 
-import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 
 @BuildParseTree
@@ -334,10 +334,13 @@ public class OpelParser extends BaseParser<OpelNode> {
 
     // Handy method for handling whitespaces, see: https://github.com/sirthias/parboiled/wiki/Handling-Whitespace
     @Override
+    @DontLabel
     protected Rule fromStringLiteral(String string) {
-        return string.endsWith(" ") ?
-                Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
-                String(string);
+        if (string.endsWith(" ")) {
+            var substring = string.substring(0, string.length() - 1);
+            return Sequence(String(substring), WhiteSpace()).label("'" + substring + "'");
+        }
+        return String(string).label("'" + string + "'");
     }
 
     protected String escapeString(String string) {

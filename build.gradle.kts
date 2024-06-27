@@ -4,10 +4,10 @@ plugins {
     jacoco
     `maven-publish`
     signing
-    id("pl.allegro.tech.build.axion-release") version "1.13.6"
-    id("com.adarshr.test-logger") version "3.0.0"
-    id("me.champeau.gradle.jmh") version "0.5.3"
-    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
+    id("pl.allegro.tech.build.axion-release") version "1.17.2"
+    id("com.adarshr.test-logger") version "4.0.0"
+    id("me.champeau.jmh") version "0.7.2"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 repositories {
@@ -25,10 +25,9 @@ java {
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.parboiled:parboiled-java:1.4.1")
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    api("org.slf4j:slf4j-api:1.7.32")
 
-    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
-    testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
+    testImplementation("org.spockframework:spock-core:2.4-M4-groovy-4.0")
 
     jmh("org.slf4j:slf4j-simple:1.7.32")
 }

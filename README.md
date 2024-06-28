@@ -61,6 +61,7 @@ opel aims at very simple expressions. Certainly it won't be enough to make compl
 opel supports:
 
 - primary math and string operations (i.e. `2+2*2`, `'Hello' + 'world !'`)
+- escaping characters in strings (i.e. `'Hello, \'World\'!'`)
 - relational and equality operators (i.e. `2 == 3`, `2 > 1 != false`)
 - logic operators (i.e. `true && false`, `false || true`)
 - simple map element access (i.e. `map.field` or `map['field']`)

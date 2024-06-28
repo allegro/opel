@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 import static OpelEngineBuilder.create
-import static pl.allegro.tech.opel.TestUtil.constFunctionReturning
 import static pl.allegro.tech.opel.TestUtil.functions
 
 class OpelEngineIntegrationSpec extends Specification {
@@ -74,9 +73,9 @@ xyz'"""
     def 'should evaluate expression with whitespaces "#input"'() {
         given:
         def engine = create()
-                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-                    .build()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -109,9 +108,9 @@ xyz'"""
     def 'should evaluate expression which starts with whitespace(s): "#input"'() {
         given:
         def engine = create()
-                    .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
-                    .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
-                    .build()
+                .withImplicitConversion(String, BigDecimal, { string -> new BigDecimal(string) })
+                .withImplicitConversion(BigDecimal, String, { decimal -> decimal.toPlainString() })
+                .build()
 
         expect:
         engine.eval(input).get() == expResult
@@ -304,5 +303,28 @@ xyz'"""
         result == 1
         counter1 == 1
         counter2 == 0
+    }
+
+    @Unroll
+    def 'opel does not support any special characters escaping'() {
+        given:
+        def engine = create().build()
+
+        expect:
+        engine.eval(input).get() == expResult
+
+        where:
+        input                                       || expResult
+        /'Guns\'n\'Roses'.startsWith('Guns\'n\'R')/ || true // \' = ' character (escaped)
+        /'\\slash\\'.startsWith('\\')/              || true // \\ = \ character (escaped)
+        /'pest'.startsWith('\pest')/                || true // \p = p character (escaped)
+        /'\tsomething'.startsWith('\t')/            || true // \t = t character (escaped)
+        /'\nsomething'.startsWith('\n')/            || true // \n = n character (escaped)
+        /'\rsomething'.startsWith('\r')/            || true // \r = r character (escaped)
+        /'\r\nsomething'.startsWith('\r\n')/        || true // \r\n = rn characters (escaped)
+        /'test'.startsWith('\test')/                || true // \t = t character (escaped)
+        /'nest'.startsWith('\nest')/                || true // \n = n character (escaped)
+        /'rest'.startsWith('\rest')/                || true // \r = r character (escaped)
+        /'rust'.startsWith('\r\nust')/              || false // \r\n = rn characters (escaped)
     }
 }

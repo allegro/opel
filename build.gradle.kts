@@ -27,7 +27,7 @@ dependencies {
     implementation("org.parboiled:parboiled-java:1.4.1")
     api("org.slf4j:slf4j-api:1.7.32")
 
-    testImplementation("org.spockframework:spock-core:2.4-M4-groovy-4.0")
+    testImplementation("org.spockframework:spock-core:2.4-M6-groovy-4.0")
 
     jmh("org.slf4j:slf4j-simple:1.7.32")
 }

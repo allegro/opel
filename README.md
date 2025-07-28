@@ -60,7 +60,7 @@ opel aims at very simple expressions. Certainly it won't be enough to make compl
 
 opel supports:
 
-- primary math and string operations (i.e. `2+2*2`, `'Hello' + 'world !'`)
+- primary math and string operations (i.e. `2+2*2`, `'Hello' + "world !"`)
 - escaping characters in strings (i.e. `'Hello, \'World\'!'`)
 - relational and equality operators (i.e. `2 == 3`, `2 > 1 != false`)
 - logic operators (i.e. `true && false`, `false || true`)
@@ -69,7 +69,7 @@ opel supports:
 - object method calls (i.e. `'Hello, World!'.length()`)
 - if expressions (i.e. `if (2 > 3) 'a' else 'b'`)
 - defining local constant values (i.e. `val x = 2+2*2; x * x`)
-- defining maps (i.e. `val x = {'a': 'b'}; x.a`)
+- defining maps (i.e. `val x = {"a": "b"}; x.a`)
 - defining lists (i.e. `val x = ['a', 'b']; x[0]`)
 - defining the functions and lambda expression (i.e. `val x = a -> a * a; val y = b -> b + b; x(y(r))`)
 - registrable constant values (i.e. `'Hello, ' + WORLD_VALUE`)

@@ -25,11 +25,11 @@ java {
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.parboiled:parboiled-java:1.4.1")
-    api("org.slf4j:slf4j-api:1.7.32")
+    api("org.slf4j:slf4j-api:2.0.17")
 
     testImplementation("org.spockframework:spock-core:2.4-M4-groovy-4.0")
 
-    jmh("org.slf4j:slf4j-simple:1.7.32")
+    jmh("org.slf4j:slf4j-simple:2.0.17")
 }
 
 group = "pl.allegro.tech"

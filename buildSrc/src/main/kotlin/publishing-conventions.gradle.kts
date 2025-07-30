@@ -5,30 +5,30 @@ plugins {
 }
 
 publishing {
-    afterEvaluate {
-        publications {
-            withType<MavenPublication> {
-                pom {
-                    name.set(project.name)
-                    description.set("Asynchronous expression language")
+    publications {
+        create<MavenPublication>("sonatype") {
+            artifactId = "opel"
+            from(components["java"])
+            pom {
+                name.set(project.name)
+                description.set("Asynchronous expression language")
+                url.set("https://github.com/allegro/opel")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("opel-developers")
+                        name.set("OPEL-DEVELOPERS")
+                    }
+                }
+                scm {
+                    connection.set("scm:git@github.com:allegro/opel.git")
+                    developerConnection.set("scm:git@github.com:allegro/opel.git")
                     url.set("https://github.com/allegro/opel")
-                    licenses {
-                        license {
-                            name.set("The Apache License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("opel-developers")
-                            name.set("OPEL-DEVELOPERS")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git@github.com:allegro/opel.git")
-                        developerConnection.set("scm:git@github.com:allegro/opel.git")
-                        url.set("https://github.com/allegro/opel")
-                    }
                 }
             }
         }

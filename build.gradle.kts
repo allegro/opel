@@ -8,6 +8,10 @@ plugins {
     alias(libs.plugins.test.logger)
 }
 
+scmVersion {
+    unshallowRepoOnCI.set(true)
+}
+
 repositories {
     mavenCentral()
 }

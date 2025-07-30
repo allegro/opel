@@ -21,6 +21,8 @@ class OpelEngineMapIntegrationSpec extends Specification {
         "{:}"                 || [:]
         "{'x':2}"             || [x: 2]
         "({'x': 2 })"         || [x: 2]
+        '({"x": 2 })'         || [x: 2]
+        '({"x": "test" })'    || [x: 'test']
         "{'x': 2, 'y':3 }"    || [x: 2, y: 3]
         "{'x': 2, 'y':null }" || [x: 2, y: null]
         "{'x': 2, 'null':2 }" || [x: 2, null: 2]

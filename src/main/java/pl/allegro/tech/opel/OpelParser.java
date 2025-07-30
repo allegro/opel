@@ -78,12 +78,15 @@ public class OpelParser extends BaseParser<OpelNode> {
     }
 
     Rule StringLiteral() {
-        return Sequence("'", StringContent(), "'", push(pop()), WhiteSpace());
+        return FirstOf(
+                Sequence("'", StringContent("'"), "'", push(pop()), WhiteSpace()),
+                Sequence("\"", StringContent("\""), "\"", push(pop()), WhiteSpace())
+        );
     }
 
-    Rule StringContent() {
+    Rule StringContent(String quote) {
         return Sequence(
-                ZeroOrMore(Sequence(TestNot(AnyOf("\r\n'")), FirstOf(escapedChar(), ANY))),
+                ZeroOrMore(Sequence(TestNot(AnyOf("\r\n%s".formatted(quote))), FirstOf(escapedChar(), ANY))),
                 push(nodeFactory.literalNode(escapeString(matchOrDefault(""))))
         );
     }
@@ -268,7 +271,7 @@ public class OpelParser extends BaseParser<OpelNode> {
         return FirstOf(
                 Sequence("( ", IdentifiersList(), ") "),
                 Sequence(push(nodeFactory.emptyIdentifiersList()), IdentifiersListItem())
-                );
+        );
     }
 
     Rule IdentifiersList() {
@@ -297,10 +300,10 @@ public class OpelParser extends BaseParser<OpelNode> {
 
     Rule MapInstantiation() {
         return Sequence(
-            "{ ",
-            Pairs(),
-            "} ",
-            push(nodeFactory.mapInstantiationExpressionNode(pop()))
+                "{ ",
+                Pairs(),
+                "} ",
+                push(nodeFactory.mapInstantiationExpressionNode(pop()))
         );
     }
 
@@ -338,9 +341,9 @@ public class OpelParser extends BaseParser<OpelNode> {
     protected Rule fromStringLiteral(String string) {
         if (string.endsWith(" ")) {
             var substring = string.substring(0, string.length() - 1);
-            return Sequence(String(substring), WhiteSpace()).label("'" + substring + "'");
+            return Sequence(String(substring), WhiteSpace()).label("'%s'".formatted(substring));
         }
-        return String(string).label("'" + string + "'");
+        return String(string).label("'%s'".formatted(string));
     }
 
     protected String escapeString(String string) {

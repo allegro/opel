@@ -24,6 +24,7 @@ class OpelEngineIntegrationSpec extends Specification {
         "'Guns N\\' Roses'" || "Guns N' Roses"
         "'AC\\\\DC'"        || "AC\\DC"
         "'abc'"             || "abc"
+        '"abc"'             || "abc"
         "'abc'"             || "abc"
         "'łąć'"             || "łąć"
         "'abc'+'xyz'"       || 'abcxyz'
@@ -97,6 +98,7 @@ xyz'"""
         "'abc '"            || "abc "
         "'abc ' "           || "abc "
         "'abc' + 'xyz'"     || 'abcxyz'
+        '"abc" + "xyz"'     || 'abcxyz'
         "'abc ' + ' xyz'"   || 'abc  xyz'
         "'abc'+ 123"        || 'abc123'
         "123 == '123'"      || true

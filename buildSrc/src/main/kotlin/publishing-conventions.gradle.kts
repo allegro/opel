@@ -12,9 +12,11 @@ publishing {
                     name.set(project.name)
                     description.set("Asynchronous expression language")
                     url.set("https://github.com/allegro/opel")
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                     developers {
                         developer {

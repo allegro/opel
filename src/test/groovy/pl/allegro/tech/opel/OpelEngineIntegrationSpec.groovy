@@ -305,6 +305,26 @@ xyz'"""
         counter2 == 0
     }
 
+    def 'should not execute method if previous condition in if fail'() {
+        given:
+        def engine = create().build()
+        def counter1 = 0;
+        def counter2 = 0;
+        def functions = [
+                'one'        : CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(++counter1) }),
+                'twoArgsFunc': CompletableFuture.completedFuture((OpelAsyncFunction<?>) { CompletableFuture.completedFuture(--counter2) })
+        ];
+        def evalContext = EvalContextBuilder.create().withValues(functions).build()
+
+        when:
+        def result = engine.eval("one() == 2 && twoArgsFunc()", evalContext).get()
+
+        then:
+        result == false
+        counter1 == 1
+        counter2 == 0
+    }
+
     @Unroll
     def 'opel does not support any special characters escaping'() {
         given:

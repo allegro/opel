@@ -33,6 +33,13 @@ dependencies {
 }
 
 group = "pl.allegro.tech"
+
+scmVersion {
+    tag.prefix = project.rootProject.name
+    tag.versionSeparator = "-"
+    versionCreator("versionWithBranch")
+}
+
 version = scmVersion.version
 
 tasks {

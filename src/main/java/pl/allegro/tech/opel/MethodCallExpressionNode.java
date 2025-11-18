@@ -6,7 +6,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,7 +51,7 @@ public class MethodCallExpressionNode implements OpelNode {
         return FutureUtil.sequence(
                 arguments
                         .map(ags -> ags.getListOfValues(context))
-                        .orElse(Collections.emptyList())
+                        .orElse(List.of())
                         .stream()
                         .map(this::javaGenericsFix).collect(Collectors.toList())
         ).thenCombine(subject.getValue(context), (args, sbj) -> methodCall(sbj, identifier, args));
@@ -113,5 +116,13 @@ public class MethodCallExpressionNode implements OpelNode {
 
     private CompletableFuture<Object> javaGenericsFix(CompletableFuture<?> it) {
         return it.thenApply(Function.identity());
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        var identifiers = new ArrayList<IdentifierExpressionNode>();
+        arguments.ifPresent(arguments -> identifiers.addAll(arguments.getRequiredIdentifiers()));
+        identifiers.addAll(subject.getRequiredIdentifiers());
+        return identifiers;
     }
 }

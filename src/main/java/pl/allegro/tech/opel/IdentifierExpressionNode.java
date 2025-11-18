@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class IdentifierExpressionNode implements OpelNode {
@@ -16,5 +17,10 @@ class IdentifierExpressionNode implements OpelNode {
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
         return CompletableFuture.completedFuture(identifier);
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return List.of(this);
     }
 }

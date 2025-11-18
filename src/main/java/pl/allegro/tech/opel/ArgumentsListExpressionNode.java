@@ -1,6 +1,5 @@
 package pl.allegro.tech.opel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -27,6 +26,11 @@ class ArgumentsListExpressionNode implements OpelNode {
     }
 
     static ArgumentsListExpressionNode empty() {
-        return new ArgumentsListExpressionNode(Collections.emptyList());
+        return new ArgumentsListExpressionNode(List.of());
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(args);
     }
 }

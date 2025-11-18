@@ -2,6 +2,7 @@ package pl.allegro.tech.opel;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -25,5 +26,10 @@ public class MapInstantiationExpressionNode implements OpelNode {
 
     private AbstractMap.SimpleImmutableEntry entry(Object key, Object value) {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return pairs.getRequiredIdentifiers();
     }
 }

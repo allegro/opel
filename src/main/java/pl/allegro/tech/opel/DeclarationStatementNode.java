@@ -1,5 +1,7 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
+
 public class DeclarationStatementNode extends StatementNode {
     private final IdentifierExpressionNode identifier;
     private final OpelNode expression;
@@ -15,5 +17,15 @@ public class DeclarationStatementNode extends StatementNode {
 
     public OpelNode getExpression() {
         return expression;
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return expression.getRequiredIdentifiers();
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
+        return List.of(identifier);
     }
 }

@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class FunctionChainExpressionNode implements OpelNode {
@@ -27,5 +28,10 @@ public class FunctionChainExpressionNode implements OpelNode {
             }
             throw new OpelException("Can't use '" + fun.getClass().getSimpleName() + "' as a function");
         });
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return argsGroups.getRequiredIdentifiers();
     }
 }

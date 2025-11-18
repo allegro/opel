@@ -22,4 +22,14 @@ public class DeclarationsListStatementNode extends StatementNode {
     public boolean isEmpty() {
         return declarations.isEmpty();
     }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(declarations);
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
+        return declarations.stream().map(DeclarationStatementNode::getIdentifier).toList();
+    }
 }

@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class LogicalNegationOperatorExpressionNode implements OpelNode {
@@ -27,5 +28,10 @@ class LogicalNegationOperatorExpressionNode implements OpelNode {
             return !conversion.convert(value, Boolean.class);
         }
         throw new OpelException("Can't negate " + value.getClass().getSimpleName() + " type");
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return opelNode.getRequiredIdentifiers();
     }
 }

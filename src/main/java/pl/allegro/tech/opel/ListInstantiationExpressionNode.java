@@ -19,4 +19,9 @@ public class ListInstantiationExpressionNode implements OpelNode {
     private List<CompletableFuture<Object>> toListOfFutureOfObjects(List<CompletableFuture<?>> list) {
         return list.stream().map(it -> it.thenApply(x -> (Object) x)).collect(Collectors.toList());
     }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return listElements.getRequiredIdentifiers();
+    }
 }

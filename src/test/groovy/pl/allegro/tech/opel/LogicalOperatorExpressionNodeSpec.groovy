@@ -110,9 +110,17 @@ class LogicalOperatorExpressionNodeSpec extends Specification {
         numberOfConditionsChecked == 2
     }
 
-    private static valueExpression(Supplier<Object> valueSupplier) {
-        return {
-            return CompletableFuture.completedFuture(valueSupplier.get());
+    private static OpelNode valueExpression(Supplier<Object> valueSupplier) {
+        return new OpelNode() {
+            @Override
+            CompletableFuture<?> getValue(EvalContext context) {
+                return CompletableFuture.completedFuture(valueSupplier.get());
+            }
+
+            @Override
+            List<IdentifierExpressionNode> getRequiredIdentifiers() {
+                return List.of()
+            }
         }
     }
 

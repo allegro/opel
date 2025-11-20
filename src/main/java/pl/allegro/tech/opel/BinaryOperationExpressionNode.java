@@ -1,5 +1,7 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
+
 abstract class BinaryOperationExpressionNode implements OpelNode {
     private final OpelNode left;
     private final OpelNode right;
@@ -15,5 +17,10 @@ abstract class BinaryOperationExpressionNode implements OpelNode {
 
     OpelNode right() {
         return right;
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(List.of(left, right));
     }
 }

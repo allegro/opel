@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -27,5 +28,10 @@ class FieldAccessExpressionNode implements OpelNode {
             }
             throw new OpelException("Give me a map, given " + it.getClass().getSimpleName());
         });
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return subject.getRequiredIdentifiers();
     }
 }

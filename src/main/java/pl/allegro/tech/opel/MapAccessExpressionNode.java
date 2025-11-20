@@ -40,4 +40,9 @@ public class MapAccessExpressionNode implements OpelNode {
             throw new OpelException("Give me a map or list, given " + it.getClass().getSimpleName());
         });
     }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(List.of(subject, fieldName));
+    }
 }

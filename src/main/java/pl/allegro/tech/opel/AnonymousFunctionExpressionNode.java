@@ -1,5 +1,6 @@
 package pl.allegro.tech.opel;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -21,5 +22,15 @@ public class AnonymousFunctionExpressionNode implements OpelNode {
             }
             throw new OpelException("Can't use expression of type " + expression.getClass().getSimpleName() + " as a function");
         });
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        //what to do with identifiers used inside function body but declared in arguments list?
+        var argumentListIdentifiers = arguments.getRequiredIdentifiers().stream()
+                .map(IdentifierExpressionNode::getIdentifier).collect(Collectors.toSet());
+        return expression.getRequiredIdentifiers().stream().filter(it ->
+                !argumentListIdentifiers.contains(it.getIdentifier())
+        ).toList();
     }
 }

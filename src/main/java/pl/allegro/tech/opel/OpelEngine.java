@@ -6,7 +6,7 @@ import org.parboiled.errors.ParseError;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collector;
@@ -25,11 +25,30 @@ public class OpelEngine {
 
     public ExpressionValidationResult validate(String expression) {
         ParsingResult<OpelNode> parsingResult = getParsingResult(expression);
+        var missingDeclarations = findMissingDeclarations(parsingResult);
+        if (!missingDeclarations.isEmpty()) {
+            var parseErrors = missingDeclarations.stream()
+                .map(MissingDeclarationError::new)
+                .collect(Collectors.<ParseError>toList());
+            return ExpressionValidationResult.invalid(parseErrors);
+        }
         if (parsingResult.hasErrors()) {
             return ExpressionValidationResult.invalid(parsingResult.parseErrors);
         } else {
             return ExpressionValidationResult.valid();
         }
+    }
+
+    private Set<String> findMissingDeclarations(ParsingResult<OpelNode> parsingResult) {
+        if (parsingResult.resultValue instanceof ProgramNode) {
+            var programNode = (ProgramNode) parsingResult.resultValue;
+            var identifiers = programNode.getRequiredIdentifiers();
+            return identifiers.stream()
+                    .map(IdentifierExpressionNode::getIdentifier)
+                    .filter(identifier -> !embeddedEvalContext.hasValue(identifier))
+                    .collect(Collectors.toSet());
+        }
+        return Set.of();
     }
 
     public OpelParsingResult parse(String expression) {

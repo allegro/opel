@@ -20,7 +20,7 @@ public class FunctionInstantiationExpressionNode implements OpelNode {
             @Override
             public CompletableFuture<Object> apply(List<CompletableFuture<?>> args) {
 
-                List<CompletableFuture<Object>> collect = arguments.getIdentifiers().stream()
+                List<CompletableFuture<Object>> collect = arguments.getRequiredIdentifiers().stream()
                         .map(it -> it.getValue(context))
                         .map(it -> javaGenericWorkaround(it))
                         .collect(Collectors.toList());
@@ -46,5 +46,15 @@ public class FunctionInstantiationExpressionNode implements OpelNode {
 
     private CompletableFuture<Object> javaGenericWorkaround(CompletableFuture<?> future) {
         return future.thenApply(Function.identity());
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        //what to do with identifiers used inside function body but declared in arguments list?
+        var argumentListIdentifiers = arguments.getRequiredIdentifiers().stream()
+                .map(IdentifierExpressionNode::getIdentifier).collect(Collectors.toSet());
+        return body.getRequiredIdentifiers().stream().filter(it ->
+                !argumentListIdentifiers.contains(it.getIdentifier())
+        ).toList();
     }
 }

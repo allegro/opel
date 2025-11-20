@@ -1,6 +1,5 @@
 package pl.allegro.tech.opel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,10 +16,11 @@ public class IdentifiersListNode implements OpelNode {
     }
 
     public static OpelNode empty() {
-        return new IdentifiersListNode(Collections.emptyList());
+        return new IdentifiersListNode(List.of());
     }
 
-    public List<OpelNode> getIdentifiers() {
-        return identifiers;
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(identifiers);
     }
 }

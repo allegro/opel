@@ -2,7 +2,6 @@ package pl.allegro.tech.opel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 class OpelNodeFactory {
@@ -69,7 +68,7 @@ class OpelNodeFactory {
     }
 
     public DeclarationsListStatementNode emptyDeclarationsList() {
-        return new DeclarationsListStatementNode(Collections.emptyList());
+        return new DeclarationsListStatementNode(List.of());
     }
 
     public DeclarationsListStatementNode declarationsList(OpelNode declarationsListExpressionNode, OpelNode identifier, OpelNode expression) {
@@ -94,7 +93,7 @@ class OpelNodeFactory {
     }
 
     public OpelNode identifiersList(OpelNode identifiers, OpelNode identifier) {
-        ArrayList<OpelNode> allArgs = new ArrayList<>(((IdentifiersListNode) identifiers).getIdentifiers());
+        ArrayList<OpelNode> allArgs = new ArrayList<>(((IdentifiersListNode) identifiers).getRequiredIdentifiers());
         allArgs.add(identifier);
         return new IdentifiersListNode(allArgs);
     }
@@ -124,7 +123,7 @@ class OpelNodeFactory {
     }
 
     public PairsListNode emptyPairsListNode() {
-        return new PairsListNode(Collections.emptyList());
+        return new PairsListNode(List.of());
     }
 
     public OpelNode mapInstantiationExpressionNode(OpelNode pairs) {

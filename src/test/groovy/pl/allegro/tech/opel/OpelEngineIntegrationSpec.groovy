@@ -178,7 +178,7 @@ xyz'"""
     @Unroll
     def 'validationSucceed should be equal to #validationSucceed for expression: "#input"'() {
         expect:
-        create().build().validate(input).succeed == validationSucceed
+        create().withCompletedValue("variable", null).build().validate(input).succeed == validationSucceed
 
         where:
         input                                       || validationSucceed
@@ -213,6 +213,8 @@ xyz'"""
         "identity(1==1)"                            || true
         "identity(1==0)"                            || true
         "false || true && false || (true && false)" || true
+        "val x = 2; x + 1"                          || true
+        "val x = 2; y + 1"                          || false
     }
 
     def 'validation should return proper message for invalid expression'() {
@@ -224,6 +226,14 @@ xyz'"""
                 '''Invalid input ',', expected ' ', '\\t', '\\n', '*', '/', '+', '-', '>', '>=', '<', '<=', '==', '!=', '&&', '||', ';' or EOI (line 1, pos 3):
                   |1 ,= 5
                   |  ^\n'''.stripMargin()
+    }
+
+    def 'validation should return proper message for missing identifier'() {
+        when:
+        ExpressionValidationResult validationResult = create().build().validate("val x = 2; y + 1")
+
+        then:
+        validationResult.errorMessage.startsWith("Missing declaration 'y'")
     }
 
     def 'validation should return proper message for if expression with missing else'() {

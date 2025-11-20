@@ -1,6 +1,5 @@
 package pl.allegro.tech.opel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +25,7 @@ class FunctionCallExpressionNode implements OpelNode {
     @Override
     public CompletableFuture<?> getValue(EvalContext context) {
         CompletableFuture<OpelAsyncFunction<?>> function = getFunctionFromValue(context);
-        List<CompletableFuture<?>> args = arguments.map(ags -> ags.getListOfValues(context)).orElse(Collections.emptyList());
+        List<CompletableFuture<?>> args = arguments.map(ags -> ags.getListOfValues(context)).orElse(List.of());
         return function.thenCompose(fun -> fun.apply(args));
     }
 
@@ -43,5 +42,10 @@ class FunctionCallExpressionNode implements OpelNode {
         } else {
             throw new OpelException("Value '" + functionName + "' is not a function");
         }
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return arguments.map(ArgumentsListExpressionNode::getRequiredIdentifiers).orElse(List.of());
     }
 }

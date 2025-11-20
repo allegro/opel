@@ -1,6 +1,5 @@
 package pl.allegro.tech.opel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,10 +16,15 @@ public class ArgsGroupNode implements OpelNode {
     }
 
     public static OpelNode empty() {
-        return new ArgsGroupNode(Collections.emptyList());
+        return new ArgsGroupNode(List.of());
     }
 
     public List<ArgumentsListExpressionNode> getGroups() {
         return argsGroup;
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(argsGroup);
     }
 }

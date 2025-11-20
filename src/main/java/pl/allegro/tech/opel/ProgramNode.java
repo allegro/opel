@@ -4,6 +4,8 @@ package pl.allegro.tech.opel;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProgramNode implements OpelNode {
     private DeclarationsListStatementNode declarations;
@@ -19,6 +21,10 @@ public class ProgramNode implements OpelNode {
         return expression.getValue(updatedContext(declarations.getDeclarations(), context));
     }
 
+    List<DeclarationStatementNode> getDeclarations() {
+        return declarations.getDeclarations();
+    }
+
     private EvalContext updatedContext(List<DeclarationStatementNode> declarations, EvalContext externalContext) {
         EvalContextBuilder contextBuilder = EvalContextBuilder.create();
         for (DeclarationStatementNode declaration : declarations) {
@@ -32,5 +38,21 @@ public class ProgramNode implements OpelNode {
             contextBuilder.withValue(name, value);
         }
         return contextBuilder.withExternalEvalContext(externalContext).build();
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        //what to do with identifiers used inside function body but declared in arguments list?
+        var argumentListIdentifiers = declarations.getDeclaredIdentifiers().stream()
+                .map (IdentifierExpressionNode::getIdentifier).collect(Collectors.toSet());
+        return Stream.concat(declarations.getRequiredIdentifiers().stream(), expression.getRequiredIdentifiers().stream())
+                .filter(it ->
+                    !argumentListIdentifiers.contains(it.getIdentifier())
+            ).toList();
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
+        return OpelNode.super.getDeclaredIdentifiers();
     }
 }

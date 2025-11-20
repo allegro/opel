@@ -1,5 +1,7 @@
 package pl.allegro.tech.opel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -36,5 +38,12 @@ class IfExpressionNode extends BinaryOperationExpressionNode {
         } else {
             return right.get();
         }
+    }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        var identifiers = new ArrayList<>(super.getRequiredIdentifiers());
+        identifiers.addAll(condition.getRequiredIdentifiers());
+        return identifiers;
     }
 }

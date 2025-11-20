@@ -18,4 +18,9 @@ public class PairsListNode implements OpelNode {
     public List<PairNode> getPairs() {
         return pairs;
     }
+
+    @Override
+    public List<IdentifierExpressionNode> getRequiredIdentifiers() {
+        return CollectionUtil.getIdentifiers(pairs);
+    }
 }

@@ -1,4 +1,4 @@
 [plugins]
 integration-test = { id = "com.coditory.integration-test", version = "2.2.5" }
 test-logger = { id = "com.adarshr.test-logger", version = "4.0.0" }
-axion-release = { id = "pl.allegro.tech.build.axion-release", version = "1.21.0" }
+axion-release = { id = "pl.allegro.tech.build.axion-release", version = "1.21.1" }

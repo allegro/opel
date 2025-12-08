@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class IdentifierExpressionNode implements OpelNode {
-    private final String identifier;
+    final String identifier;
 
     public IdentifierExpressionNode(String identifier) {
         this.identifier = identifier;
@@ -22,5 +22,10 @@ class IdentifierExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return List.of(this);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

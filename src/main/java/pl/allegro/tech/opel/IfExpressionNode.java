@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 class IfExpressionNode extends BinaryOperationExpressionNode {
-    private final OpelNode condition;
+    final OpelNode condition;
     private final ImplicitConversion implicitConversion;
 
     public IfExpressionNode(OpelNode condition, OpelNode trueValue, OpelNode falseValue, ImplicitConversion implicitConversion) {
@@ -45,5 +45,10 @@ class IfExpressionNode extends BinaryOperationExpressionNode {
         var identifiers = new ArrayList<>(super.getRequiredIdentifiers());
         identifiers.addAll(condition.getRequiredIdentifiers());
         return identifiers;
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

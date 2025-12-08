@@ -19,4 +19,9 @@ class LiteralExpressionNode implements OpelNode {
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return List.of();
     }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -6,8 +6,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FunctionInstantiationExpressionNode implements OpelNode {
-    private final IdentifiersListNode arguments;
-    private final OpelNode body;
+    final IdentifiersListNode arguments;
+    final OpelNode body;
 
     public FunctionInstantiationExpressionNode(IdentifiersListNode arguments, OpelNode body) {
         this.arguments = arguments;
@@ -56,5 +56,10 @@ public class FunctionInstantiationExpressionNode implements OpelNode {
         return body.getRequiredIdentifiers().stream().filter(it ->
                 !argumentListIdentifiers.contains(it.getIdentifier())
         ).toList();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

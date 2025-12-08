@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProgramNode implements OpelNode {
-    private DeclarationsListStatementNode declarations;
-    private OpelNode expression;
+    DeclarationsListStatementNode declarations;
+    OpelNode expression;
 
     public ProgramNode(DeclarationsListStatementNode declarationsList, OpelNode expression) {
         this.declarations = declarationsList;
@@ -54,5 +54,10 @@ public class ProgramNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
         return OpelNode.super.getDeclaredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

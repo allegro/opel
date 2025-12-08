@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 class ValueExpressionNode implements OpelNode {
-    private final IdentifierExpressionNode node;
+    final IdentifierExpressionNode node;
 
     public ValueExpressionNode(IdentifierExpressionNode node) {
         this.node = node;
@@ -28,5 +28,10 @@ class ValueExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return List.of(node);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

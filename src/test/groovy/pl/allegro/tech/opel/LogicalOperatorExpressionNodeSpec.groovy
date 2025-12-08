@@ -121,6 +121,11 @@ class LogicalOperatorExpressionNodeSpec extends Specification {
             List<IdentifierExpressionNode> getRequiredIdentifiers() {
                 return List.of()
             }
+
+            @Override
+            void accept(OpelNodeVisitor visitor) {
+
+            }
         }
     }
 

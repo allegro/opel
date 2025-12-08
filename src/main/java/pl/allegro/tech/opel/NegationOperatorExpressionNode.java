@@ -34,4 +34,9 @@ class NegationOperatorExpressionNode implements OpelNode {
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return value.getRequiredIdentifiers();
     }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class FunctionChainExpressionNode implements OpelNode {
-    private final OpelNode expression;
-    private final ArgsGroupNode argsGroups;
+    final OpelNode expression;
+    final ArgsGroupNode argsGroups;
 
     public FunctionChainExpressionNode(OpelNode expression, ArgsGroupNode argsGroups) {
         this.expression = expression;
@@ -33,5 +33,10 @@ public class FunctionChainExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return argsGroups.getRequiredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

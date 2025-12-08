@@ -3,8 +3,8 @@ package pl.allegro.tech.opel;
 import java.util.List;
 
 public class DeclarationStatementNode extends StatementNode {
-    private final IdentifierExpressionNode identifier;
-    private final OpelNode expression;
+    final IdentifierExpressionNode identifier;
+    final OpelNode expression;
 
     public DeclarationStatementNode(OpelNode identifier, OpelNode expression) {
         this.identifier = (IdentifierExpressionNode) identifier;
@@ -27,5 +27,10 @@ public class DeclarationStatementNode extends StatementNode {
     @Override
     public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
         return List.of(identifier);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

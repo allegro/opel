@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 class ArgumentsListExpressionNode implements OpelNode {
 
-    private final List<OpelNode> args;
+    final List<OpelNode> args;
 
     ArgumentsListExpressionNode(List<OpelNode> args) {
         this.args = args;
@@ -32,5 +32,10 @@ class ArgumentsListExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return CollectionUtil.getIdentifiers(args);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

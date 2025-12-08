@@ -217,6 +217,20 @@ xyz'"""
         "val x = 2; y + 1"                          || false
     }
 
+    def 'validate custom expression'() {
+        given:
+        def engine = create()
+        .withValue('isAuthenticated', CompletableFuture.supplyAsync {wait(100); true})
+                .build()
+
+        when:
+        def result = engine.validate("val includes = ['id']; val added = if (isAuthenticated()) includes.add('watchlist') else null;" +
+                "includes")
+
+        then:
+        !result.succeed
+    }
+
     def 'validation should return proper message for invalid expression'() {
         when:
         ExpressionValidationResult validationResult = create().build().validate("1 ,= 5")

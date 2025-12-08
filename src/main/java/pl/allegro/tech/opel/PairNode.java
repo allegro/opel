@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PairNode implements OpelNode {
-    private final OpelNode key;
-    private final OpelNode value;
+    final OpelNode key;
+    final OpelNode value;
 
     public PairNode(OpelNode key, OpelNode value) {
         this.key = key;
@@ -28,5 +28,10 @@ public class PairNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return CollectionUtil.getIdentifiers(List.of(key, value));
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

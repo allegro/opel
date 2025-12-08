@@ -5,7 +5,7 @@ import java.util.List;
 
 public class DeclarationsListStatementNode extends StatementNode {
 
-    private final List<DeclarationStatementNode> declarations;
+    final List<DeclarationStatementNode> declarations;
 
     public DeclarationsListStatementNode(List<DeclarationStatementNode> declarations, DeclarationStatementNode declaration) {
         this.declarations = new ArrayList<>(declarations);
@@ -31,5 +31,10 @@ public class DeclarationsListStatementNode extends StatementNode {
     @Override
     public List<IdentifierExpressionNode> getDeclaredIdentifiers() {
         return declarations.stream().map(DeclarationStatementNode::getIdentifier).toList();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

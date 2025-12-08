@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PairsListNode implements OpelNode {
-    private final List<PairNode> pairs;
+    final List<PairNode> pairs;
 
     public PairsListNode(List<PairNode> pairs) {
         this.pairs = pairs;
@@ -22,5 +22,10 @@ public class PairsListNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return CollectionUtil.getIdentifiers(pairs);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -11,7 +11,7 @@ public class EvalContextBuilder {
 
     static EvalContext fromMap(Map<String, CompletableFuture<?>> values) {
         Map<String, CompletableFuture<?>> copiedValues = new HashMap<>(values);
-        return name -> Optional.ofNullable(copiedValues.get(name));
+        return new MapBasedEvalContext(copiedValues);
     }
 
     public static EvalContextBuilder create() {
@@ -65,9 +65,6 @@ public class EvalContextBuilder {
     }
 
     static EvalContext mergeContexts(EvalContext primary, EvalContext secondary) {
-        return name -> {
-            Optional<CompletableFuture<?>> value = primary.getValue(name);
-            return (value.isPresent()) ? value : secondary.getValue(name);
-        };
+        return new MergedEvalContext(primary, secondary);
     }
 }

@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class ListInstantiationExpressionNode implements OpelNode {
-    private final ArgumentsListExpressionNode listElements;
+    final ArgumentsListExpressionNode listElements;
 
     public ListInstantiationExpressionNode(ArgumentsListExpressionNode listElements) {
         this.listElements = listElements;
@@ -23,5 +23,10 @@ public class ListInstantiationExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return listElements.getRequiredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

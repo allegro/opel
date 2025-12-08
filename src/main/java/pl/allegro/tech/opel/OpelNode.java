@@ -9,4 +9,5 @@ interface OpelNode {
     default List<IdentifierExpressionNode> getDeclaredIdentifiers() {
         return List.of();
     }
+    void accept(OpelNodeVisitor visitor);
 }

@@ -15,9 +15,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MethodCallExpressionNode implements OpelNode {
-    private final OpelNode subject;
-    private final String identifier;
-    private final Optional<ArgumentsListExpressionNode> arguments;
+    final OpelNode subject;
+    final String identifier;
+    final Optional<ArgumentsListExpressionNode> arguments;
     private final ImplicitConversion implicitConversion;
     private final MethodExecutionFilter methodExecutionFilter;
 
@@ -124,5 +124,10 @@ public class MethodCallExpressionNode implements OpelNode {
         arguments.ifPresent(arguments -> identifiers.addAll(arguments.getRequiredIdentifiers()));
         identifiers.addAll(subject.getRequiredIdentifiers());
         return identifiers;
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

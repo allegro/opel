@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class MapInstantiationExpressionNode implements OpelNode {
-    private final PairsListNode pairs;
+    final PairsListNode pairs;
 
     public MapInstantiationExpressionNode(PairsListNode pairs) {
         this.pairs = pairs;
@@ -31,5 +31,10 @@ public class MapInstantiationExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return pairs.getRequiredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

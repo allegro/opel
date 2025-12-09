@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class MapAccessExpressionNode implements OpelNode {
-    private final OpelNode subject;
-    private final OpelNode fieldName;
+    final OpelNode subject;
+    final OpelNode fieldName;
 
     public MapAccessExpressionNode(OpelNode subject, OpelNode fieldName) {
         this.subject = subject;
@@ -44,5 +44,10 @@ public class MapAccessExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return CollectionUtil.getIdentifiers(List.of(subject, fieldName));
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

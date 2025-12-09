@@ -3,6 +3,7 @@ package pl.allegro.tech.opel;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public interface EvalContext {
@@ -16,4 +17,6 @@ public interface EvalContext {
     static EvalContext empty() {
         return EvalContextBuilder.fromMap(Collections.emptyMap());
     }
+
+    Set<String> getKeys();
 }

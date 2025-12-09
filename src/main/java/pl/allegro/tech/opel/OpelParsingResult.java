@@ -55,4 +55,8 @@ public class OpelParsingResult {
     public String getParsingErrorMessage() {
         return ErrorUtils.printParseErrors(parsingResult.parseErrors);
     }
+
+    public void accept(OpelNodeVisitor visitor) {
+        parsingResult.resultValue.accept(visitor);
+    }
 }

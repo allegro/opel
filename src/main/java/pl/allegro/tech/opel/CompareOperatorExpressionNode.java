@@ -3,9 +3,9 @@ package pl.allegro.tech.opel;
 import java.util.concurrent.CompletableFuture;
 
 class CompareOperatorExpressionNode extends BinaryOperationExpressionNode {
-    private final boolean greater;
-    private final boolean equal;
-    private final ImplicitConversion implicitConversion;
+    final boolean greater;
+    final boolean equal;
+    final ImplicitConversion implicitConversion;
 
     private CompareOperatorExpressionNode(boolean greater, boolean equal, OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);

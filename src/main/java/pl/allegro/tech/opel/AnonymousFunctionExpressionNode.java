@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 public class AnonymousFunctionExpressionNode implements OpelNode {
 
-    private final OpelNode expression;
-    private final ArgumentsListExpressionNode arguments;
+    final OpelNode expression;
+    final ArgumentsListExpressionNode arguments;
 
     public AnonymousFunctionExpressionNode(OpelNode expression, ArgumentsListExpressionNode arguments) {
         this.expression = expression;
@@ -32,5 +32,10 @@ public class AnonymousFunctionExpressionNode implements OpelNode {
         return expression.getRequiredIdentifiers().stream().filter(it ->
                 !argumentListIdentifiers.contains(it.getIdentifier())
         ).toList();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

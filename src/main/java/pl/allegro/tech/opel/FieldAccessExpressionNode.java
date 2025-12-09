@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 class FieldAccessExpressionNode implements OpelNode {
-    private final OpelNode subject;
-    private final OpelNode fieldName;
+    final OpelNode subject;
+    final OpelNode fieldName;
 
     public FieldAccessExpressionNode(OpelNode subject, OpelNode fieldName) {
         this.subject = subject;
@@ -33,5 +33,10 @@ class FieldAccessExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return subject.getRequiredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

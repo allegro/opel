@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.concurrent.CompletableFuture;
 
 class DivideOperatorExpressionNode extends BinaryOperationExpressionNode {
-    private final ImplicitConversion implicitConversion;
+    final ImplicitConversion implicitConversion;
 
     public DivideOperatorExpressionNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
         super(left, right);

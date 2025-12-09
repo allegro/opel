@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 class LogicalNegationOperatorExpressionNode implements OpelNode {
 
-    private final OpelNode opelNode;
+    OpelNode opelNode;
     private final ImplicitConversion conversion;
 
     LogicalNegationOperatorExpressionNode(OpelNode opelNode, ImplicitConversion conversion) {
@@ -33,5 +33,10 @@ class LogicalNegationOperatorExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return opelNode.getRequiredIdentifiers();
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

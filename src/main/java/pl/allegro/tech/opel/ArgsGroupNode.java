@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ArgsGroupNode implements OpelNode {
-    private final List<ArgumentsListExpressionNode> argsGroup;
+    final List<ArgumentsListExpressionNode> argsGroup;
 
     public ArgsGroupNode(List<ArgumentsListExpressionNode> argsGroup) {
         this.argsGroup = argsGroup;
@@ -26,5 +26,10 @@ public class ArgsGroupNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return CollectionUtil.getIdentifiers(argsGroup);
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

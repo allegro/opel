@@ -6,8 +6,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 class FunctionCallExpressionNode implements OpelNode {
-    private final String functionName;
-    private final Optional<ArgumentsListExpressionNode> arguments;
+    final String functionName;
+    final Optional<ArgumentsListExpressionNode> arguments;
 
     public FunctionCallExpressionNode(String functionName, ArgumentsListExpressionNode arguments) {
         this.functionName = functionName;
@@ -47,5 +47,10 @@ class FunctionCallExpressionNode implements OpelNode {
     @Override
     public List<IdentifierExpressionNode> getRequiredIdentifiers() {
         return arguments.map(ArgumentsListExpressionNode::getRequiredIdentifiers).orElse(List.of());
+    }
+
+    @Override
+    public void accept(OpelNodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

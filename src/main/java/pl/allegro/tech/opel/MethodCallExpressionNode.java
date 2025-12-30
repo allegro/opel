@@ -92,7 +92,7 @@ public class MethodCallExpressionNode implements OpelNode {
             Class<?> expectedType = parameters[i].getType();
             convertedArgs.add(implicitConversion.convert(arg, expectedType));
         }
-        return convertedArgs.toArray(new Object[convertedArgs.size()]);
+        return convertedArgs.toArray(new Object[0]);
     }
 
     private boolean areArgsMatchForMethod(Method method, List<?> args) {

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProgramNode implements OpelNode {
-    private DeclarationsListStatementNode declarations;
-    private OpelNode expression;
+    private final DeclarationsListStatementNode declarations;
+    private final OpelNode expression;
 
     public ProgramNode(DeclarationsListStatementNode declarationsList, OpelNode expression) {
         this.declarations = declarationsList;

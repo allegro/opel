@@ -40,8 +40,7 @@ public class OpelEngine {
     }
 
     private Set<String> findMissingDeclarations(ParsingResult<OpelNode> parsingResult) {
-        if (parsingResult.resultValue instanceof ProgramNode) {
-            var programNode = (ProgramNode) parsingResult.resultValue;
+        if (parsingResult.resultValue instanceof ProgramNode programNode) {
             var identifiers = programNode.getRequiredIdentifiers();
             return identifiers.stream()
                     .map(IdentifierExpressionNode::getIdentifier)

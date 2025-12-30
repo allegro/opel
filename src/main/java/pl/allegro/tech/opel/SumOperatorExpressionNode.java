@@ -1,7 +1,6 @@
 package pl.allegro.tech.opel;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 class SumOperatorExpressionNode extends BinaryOperationExpressionNode {

@@ -15,33 +15,20 @@ enum Operator {
     OR;
 
     public OpelNode createNode(OpelNode left, OpelNode right, ImplicitConversion implicitConversion) {
-        switch (this) {
-            case PLUS:
-                return new SumOperatorExpressionNode(left, right, implicitConversion);
-            case MINUS:
-                return new MinusOperatorExpressionNode(left, right, implicitConversion);
-            case MULTIPLY:
-                return new MultiplyOperatorExpressionNode(left, right, implicitConversion);
-            case DIV:
-                return new DivideOperatorExpressionNode(left, right, implicitConversion);
-            case GT:
-                return CompareOperatorExpressionNode.greaterThen(left, right, implicitConversion);
-            case GTE:
-                return CompareOperatorExpressionNode.greaterOrEqual(left, right, implicitConversion);
-            case LT:
-                return CompareOperatorExpressionNode.lowerThen(left, right, implicitConversion);
-            case LTE:
-                return CompareOperatorExpressionNode.lowerOrEqual(left, right, implicitConversion);
-            case EQUAL:
-                return EqualOperatorExpressionNode.equalityOperator(left, right, implicitConversion);
-            case NOT_EQUAL:
-                return EqualOperatorExpressionNode.inequalityOperator(left, right, implicitConversion);
-            case AND:
-                return LogicalOperatorExpressionNode.andOperator(left, right, implicitConversion);
-            case OR:
-                return LogicalOperatorExpressionNode.orOperator(left, right, implicitConversion);
-        }
+        return switch (this) {
+            case PLUS -> new SumOperatorExpressionNode(left, right, implicitConversion);
+            case MINUS -> new MinusOperatorExpressionNode(left, right, implicitConversion);
+            case MULTIPLY -> new MultiplyOperatorExpressionNode(left, right, implicitConversion);
+            case DIV -> new DivideOperatorExpressionNode(left, right, implicitConversion);
+            case GT -> CompareOperatorExpressionNode.greaterThen(left, right, implicitConversion);
+            case GTE -> CompareOperatorExpressionNode.greaterOrEqual(left, right, implicitConversion);
+            case LT -> CompareOperatorExpressionNode.lowerThen(left, right, implicitConversion);
+            case LTE -> CompareOperatorExpressionNode.lowerOrEqual(left, right, implicitConversion);
+            case EQUAL -> EqualOperatorExpressionNode.equalityOperator(left, right, implicitConversion);
+            case NOT_EQUAL -> EqualOperatorExpressionNode.inequalityOperator(left, right, implicitConversion);
+            case AND -> LogicalOperatorExpressionNode.andOperator(left, right, implicitConversion);
+            case OR -> LogicalOperatorExpressionNode.orOperator(left, right, implicitConversion);
+        };
         // Can only happen when not all operators are listed above
-        throw new UnsupportedOperationException("Unsupported operator " + this);
     }
 }

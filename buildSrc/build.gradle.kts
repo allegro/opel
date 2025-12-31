@@ -2,8 +2,12 @@ plugins {
     `kotlin-dsl`
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation("me.champeau.jmh:me.champeau.jmh.gradle.plugin:0.7.2")
+    implementation("me.champeau.jmh:me.champeau.jmh.gradle.plugin:0.7.3")
     implementation("io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0")
 }
 

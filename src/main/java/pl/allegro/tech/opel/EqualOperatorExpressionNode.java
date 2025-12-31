@@ -43,7 +43,7 @@ class EqualOperatorExpressionNode extends BinaryOperationExpressionNode {
                 }
                 return left.equals(right) == equal;
             } catch (Exception e) {
-                logger.info("Error on comparing " + left + " with " + right, e);
+                logger.info("Error on comparing {} with {}", left, right, e);
                 return false;
             }
         });
